@@ -23,6 +23,16 @@ node app.js
 
 
 # Instruction
+- Steps to push a new feature:
+```
+git add .
+```
+```
+git commit -m "your message"
+```
+```
+git push -u origin dev
+```
 - Before pushing, change branch to dev:
 ```
 git checkout dev
