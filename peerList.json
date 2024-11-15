@@ -1,0 +1,20 @@
+[
+  {
+    "peerId": "1",
+    "ip": "::ffff:127.0.0.1",
+    "port": 4635,
+    "pieces": [
+      "piece1",
+      "piece2"
+    ]
+  },
+  {
+    "peerId": "2",
+    "ip": "::ffff:127.0.0.1",
+    "port": 4960,
+    "pieces": [
+      "piece3",
+      "piece4"
+    ]
+  }
+]
