@@ -4,14 +4,15 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const app = express();
-// 10.128.132.45
-const PEER_PORT = process.env.PEER_PORT || 4000;
-const TRACKER_URL = 'http://192.168.1.101:3000'; // Replace with the tracker device's IP
+// 192.168.68.52
+// 192.168.68.156
+const PEER_PORT = process.env.PEER_PORT || 3000;
+const TRACKER_URL = 'http://192.168.68.52:4000'; // Replace with the tracker device's IP
 let connectedPeers = [];
 
 // Register the peer with the tracker
 async function registerWithTracker() {
-    const ip = '127.0.0.1'; // Replace with your machine's IP for cross-machine connection
+    const ip = '192.168.68.156'; // Replace with your machine's IP for cross-machine connection
     try {
         const response = await axios.post(`${TRACKER_URL}/register`, null, {
             params: { ip, port: PEER_PORT }
