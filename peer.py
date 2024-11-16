@@ -1,15 +1,21 @@
 import socket
 import threading
-import os
 import atexit
+import signal
+import sys
 
+# Register a peer with the tracker
 def register_with_tracker(tracker_host, tracker_port, file_hash, peer_address):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((tracker_host, tracker_port))
-        s.sendall(f"REGISTER|{file_hash}|{peer_address}".encode('utf-8'))
-        response = s.recv(1024)
-        print(response.decode('utf-8'))
-        
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((tracker_host, tracker_port))
+            s.sendall(f"REGISTER|{file_hash}|{peer_address}".encode('utf-8'))
+            response = s.recv(1024)
+            print(response.decode('utf-8'))
+    except Exception as e:
+        print(f"Error registering with tracker: {e}")
+
+# Deregister a peer from the tracker
 def deregister_from_tracker(tracker_host, tracker_port, file_hash, peer_address):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -19,28 +25,30 @@ def deregister_from_tracker(tracker_host, tracker_port, file_hash, peer_address)
             print(response.decode('utf-8'))
     except Exception as e:
         print(f"Error while deregistering: {e}")
-        
-def cleanup():
-    print("Exiting and deregistering from tracker...")
-    deregister_from_tracker(tracker_host, tracker_port, file_hash, f"{peer_host}:{peer_port}")
 
-# Register the cleanup function to run on exit
-atexit.register(cleanup)
+# Cleanup function for deregistration
+def create_cleanup(tracker_host, tracker_port, file_hash, peer_host, peer_port):
+    def cleanup():
+        print("Exiting and deregistering from tracker...")
+        try:
+            deregister_from_tracker(tracker_host, tracker_port, file_hash, f"{peer_host}:{peer_port}")
+        except Exception as e:
+            print(f"Error during cleanup: {e}")
+    return cleanup
 
-# Optional: Handle SIGINT (Ctrl+C) for immediate response
-def signal_handler(sig, frame):
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, signal_handler)
-
-
+# Query peers for a specific file
 def query_peers(tracker_host, tracker_port, file_hash):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((tracker_host, tracker_port))
-        s.sendall(f"QUERY|{file_hash}".encode('utf-8'))
-        response = s.recv(1024).decode('utf-8')
-        return response.split('|')
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((tracker_host, tracker_port))
+            s.sendall(f"QUERY|{file_hash}".encode('utf-8'))
+            response = s.recv(1024).decode('utf-8')
+            return response.split('|')
+    except Exception as e:
+        print(f"Error querying peers: {e}")
+        return []
 
+# Serve a file to peers
 def serve_file(file_path, host, port):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((host, port))
@@ -50,6 +58,7 @@ def serve_file(file_path, host, port):
         conn, addr = server.accept()
         threading.Thread(target=send_file, args=(conn, file_path)).start()
 
+# Send file chunks to a connected peer
 def send_file(conn, file_path):
     try:
         with open(file_path, 'rb') as f:
@@ -58,34 +67,49 @@ def send_file(conn, file_path):
     finally:
         conn.close()
 
+# Download a file from a peer
 def download_file(peer, file_path):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect(peer)
-        with open(file_path, 'wb') as f:
-            while chunk := s.recv(1024):
-                f.write(chunk)
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect(peer)
+            with open(file_path, 'wb') as f:
+                while chunk := s.recv(1024):
+                    f.write(chunk)
+    except Exception as e:
+        print(f"Error downloading file: {e}")
+
+# Signal handler for CTRL+C
+def signal_handler(sig, frame):
+    print("Caught interrupt signal, shutting down...")
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == "__main__":
-    # Example usage
-    tracker_host = '127.0.0.1'
+    # Configuration
+    tracker_host = '192.168.1.102'
     tracker_port = 6881
     file_hash = 'example_hash'
-    peer_host = '127.0.0.1'
+    peer_host = '0.0.0.0'  # Allow connections from external devices
     peer_port = 6882
     file_path = 'example_file.txt'
+
+    # Register cleanup with atexit
+    atexit.register(create_cleanup(tracker_host, tracker_port, file_hash, peer_host, peer_port))
 
     # Register with tracker
     register_with_tracker(tracker_host, tracker_port, file_hash, f"{peer_host}:{peer_port}")
 
-    # Serve the file
+    # Start serving the file
     threading.Thread(target=serve_file, args=(file_path, peer_host, peer_port)).start()
 
-    # Query for peers and download
+    # Example: Query peers and download (commented for manual use)
     # peers = query_peers(tracker_host, tracker_port, file_hash)
     # if peers:
     #     peer_host, peer_port = peers[0].split(':')
     #     download_file((peer_host, int(peer_port)), 'downloaded_file.txt')
-    # Simulate peer running (press Ctrl+C to stop)
+
+    # Simulate running until interrupted
     try:
         while True:
             pass
