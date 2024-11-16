@@ -1,25 +1,26 @@
-// tracker.js
-const express = require('express');
-const app = express();
-const PORT = 4000;
-const TRACKER_URL = 'http://192.168.68.52';
-let peers = []; // List to hold connected peers
+// signaling-server.js
+const WebSocket = require('ws');
 
-// Endpoint for a peer to register with the tracker
-app.post('/register', (req, res) => {
-    const { ip, port } = req.query;
-    const peer = `${ip}:${port}`;
-    if (!peers.includes(peer)) {
-        peers.push(peer);
-    }
-    res.send({ message: 'Registered', peers });
+const wss = new WebSocket.Server({ port: 3000 });
+const peers = new Set();
+
+wss.on('connection', (ws) => {
+    peers.add(ws);
+    console.log('New peer connected');
+
+    ws.on('message', (message) => {
+        // Broadcast the message to all other peers
+        peers.forEach((peer) => {
+            if (peer !== ws && peer.readyState === WebSocket.OPEN) {
+                peer.send(message);
+            }
+        });
+    });
+
+    ws.on('close', () => {
+        peers.delete(ws);
+        console.log('Peer disconnected');
+    });
 });
 
-// Endpoint to fetch the list of peers
-app.get('/peers', (req, res) => {
-    res.send(peers);
-});
-
-app.listen(PORT, () => {
-    console.log(`Tracker running on ${TRACKER_URL}:${PORT}`);
-});
+console.log('Signaling server running on ws://localhost:3000');

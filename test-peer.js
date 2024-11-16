@@ -6,6 +6,7 @@ const path = require('path');
 const app = express();
 // 192.168.68.52
 // 192.168.68.156
+// 192.168.68.31
 const PEER_PORT = process.env.PEER_PORT || 3000;
 const TRACKER_URL = 'http://192.168.68.52:4000'; // Replace with the tracker device's IP
 let connectedPeers = [];
