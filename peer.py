@@ -1,6 +1,7 @@
 import socket
 import threading
 import os
+import atexit
 
 def register_with_tracker(tracker_host, tracker_port, file_hash, peer_address):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -8,6 +9,30 @@ def register_with_tracker(tracker_host, tracker_port, file_hash, peer_address):
         s.sendall(f"REGISTER|{file_hash}|{peer_address}".encode('utf-8'))
         response = s.recv(1024)
         print(response.decode('utf-8'))
+        
+def deregister_from_tracker(tracker_host, tracker_port, file_hash, peer_address):
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((tracker_host, tracker_port))
+            s.sendall(f"DEREGISTER|{file_hash}|{peer_address}".encode('utf-8'))
+            response = s.recv(1024)
+            print(response.decode('utf-8'))
+    except Exception as e:
+        print(f"Error while deregistering: {e}")
+        
+def cleanup():
+    print("Exiting and deregistering from tracker...")
+    deregister_from_tracker(tracker_host, tracker_port, file_hash, f"{peer_host}:{peer_port}")
+
+# Register the cleanup function to run on exit
+atexit.register(cleanup)
+
+# Optional: Handle SIGINT (Ctrl+C) for immediate response
+def signal_handler(sig, frame):
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+
 
 def query_peers(tracker_host, tracker_port, file_hash):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -56,7 +81,13 @@ if __name__ == "__main__":
     threading.Thread(target=serve_file, args=(file_path, peer_host, peer_port)).start()
 
     # Query for peers and download
-    peers = query_peers(tracker_host, tracker_port, file_hash)
-    if peers:
-        peer_host, peer_port = peers[0].split(':')
-        download_file((peer_host, int(peer_port)), 'downloaded_file.txt')
+    # peers = query_peers(tracker_host, tracker_port, file_hash)
+    # if peers:
+    #     peer_host, peer_port = peers[0].split(':')
+    #     download_file((peer_host, int(peer_port)), 'downloaded_file.txt')
+    # Simulate peer running (press Ctrl+C to stop)
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        pass

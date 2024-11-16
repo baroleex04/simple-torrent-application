@@ -18,6 +18,14 @@ def handle_client(conn, addr):
             _, file_hash = data.split('|')
             peers = tracker_data.get(file_hash, [])
             conn.sendall('|'.join(peers).encode('utf-8'))
+        elif data.startswith("DEREGISTER"):
+            _, file_hash, peer_addr = data.split('|')
+            if file_hash in tracker_data and peer_addr in tracker_data[file_hash]:
+                tracker_data[file_hash].remove(peer_addr)
+                # Cleanup: Remove file_hash if no peers are left
+                if not tracker_data[file_hash]:
+                    del tracker_data[file_hash]
+            conn.sendall(b"DEREGISTERED")
     finally:
         conn.close()
 
