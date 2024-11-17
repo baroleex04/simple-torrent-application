@@ -1,0 +1,25 @@
+{
+    "announce": "URL of the tracker",
+    "info": {
+      "name": "directory where files is being saved",
+      "piece length": "length of a piece",
+      "pieces": [
+        {"piece1": "SHA-1 hash of piece 1, not data, it is used to check if the client download the true piece of a file"},
+        {"piece2": "SHA-1 hash of piece 2, 20 bytes long"}
+      ],
+      "files": [
+        {
+            "path": ["folder", "file1.txt"],
+            "length": "length of total file"
+        },
+        {
+            "path": ["folder", "file2.txt"],
+            "length": "length of total file"
+        }
+      ]
+    },
+    "annouce list": [
+        {"annouce 1": "URL of annouce 1"},
+        {"annouce 2": "URL of annouce 2"}
+    ]
+}

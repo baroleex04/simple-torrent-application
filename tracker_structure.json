@@ -1,0 +1,22 @@
+[
+    {
+        "info_hash": "hash of the key of info from torrent_structure file",
+        "peer_id": "id of the peer",
+        "port": "port of the client is listening from",
+        "uploaded": "total number of bytes uploaded",
+        "downloaded": "total number of bytes downloaded",
+        "left": "number of bytes still have to be downloaded to complete",
+        "compact": "set to 1 if the client accept the request",
+        "ip": "true ip address of the client machine"
+    },
+    {
+        "info_hash": "hash of the key of info from torrent_structure file",
+        "peer_id": "id of the peer",
+        "port": "port of the client is listening from",
+        "uploaded": "total number of bytes uploaded",
+        "downloaded": "total number of bytes downloaded",
+        "left": "number of bytes still have to be downloaded to complete",
+        "compact": "set to 1 if the client accept the request",
+        "ip": "true ip address of the client machine"
+    }
+]
