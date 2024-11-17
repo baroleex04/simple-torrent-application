@@ -1,7 +1,7 @@
 [
     {
         "info_hash": "hash of the key of info from torrent_structure file",
-        "peer_id": "id of the peer",
+        "peer_id": "1",
         "port": "port of the client is listening from",
         "uploaded": "total number of bytes uploaded",
         "downloaded": "total number of bytes downloaded",
@@ -11,7 +11,7 @@
     },
     {
         "info_hash": "hash of the key of info from torrent_structure file",
-        "peer_id": "id of the peer",
+        "peer_id": "2",
         "port": "port of the client is listening from",
         "uploaded": "total number of bytes uploaded",
         "downloaded": "total number of bytes downloaded",

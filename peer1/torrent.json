@@ -1,0 +1,22 @@
+{
+    "announce": "0.0.0.0:4000",
+    "info": {
+      "name": "peer1",
+      "piece length": 5,
+      "pieces": [
+        {"piece1": "hash1"},
+        {"piece2": "hash2"}
+      ],
+      "files": [
+        {
+            "path": ["peer1", "file1.txt"],
+            "length": 10
+        },
+        {
+            "path": ["peer1", "file2.txt"],
+            "length": 10
+        }
+      ]
+    },
+    "annouce list": []
+}
