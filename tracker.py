@@ -75,14 +75,14 @@ def handle_client(conn, addr):
                 peers = get_peers_excluding(peer_id)
                 peer_list_json = json.dumps(peers)
                 try:
-                    conn.sendall(peer_list_json.encode('utf-8')+b"\n-------------\n")
+                    conn.sendall(peer_list_json.encode('utf-8'))
                     print(f"Sent peer list to peer {peer_id}")
                 except Exception as e:
                     print(f"[ERROR] Error sending peer list: {e}")
                     break
         except Exception as e:
             print(f"[ERROR] {e}")
-    print("Check pipe!!!")
+    print("A client has left!!!")
     conn.close()
 
 # Function to run a server for tracker and listening to client from other host, port
