@@ -5,33 +5,33 @@ import signal
 import sys
 
 # Register a peer with the tracker
-def register_with_tracker(tracker_host, tracker_port, file_hash, peer_address):
+def register_with_tracker(tracker_host, tracker_port, file_hash, peer_id):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((tracker_host, tracker_port))
-            s.sendall(f"REGISTER|{file_hash}|{peer_address}".encode('utf-8'))
+            s.sendall(f"REGISTER|{file_hash}|{peer_id}".encode('utf-8'))
             response = s.recv(1024)
             print(response.decode('utf-8'))
     except Exception as e:
         print(f"Error registering with tracker: {e}")
 
 # Deregister a peer from the tracker
-def deregister_from_tracker(tracker_host, tracker_port, file_hash, peer_address):
+def deregister_from_tracker(tracker_host, tracker_port, file_hash, peer_id):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((tracker_host, tracker_port))
-            s.sendall(f"DEREGISTER|{file_hash}|{peer_address}".encode('utf-8'))
+            s.sendall(f"DEREGISTER|{file_hash}|{peer_id}".encode('utf-8'))
             response = s.recv(1024)
             print(response.decode('utf-8'))
     except Exception as e:
         print(f"Error while deregistering: {e}")
 
 # Cleanup function for deregistration
-def create_cleanup(tracker_host, tracker_port, file_hash, peer_host, peer_port):
+def create_cleanup(tracker_host, tracker_port, file_hash, peer_id):
     def cleanup():
         print("Exiting and deregistering from tracker...")
         try:
-            deregister_from_tracker(tracker_host, tracker_port, file_hash, f"{peer_host}:{peer_port}")
+            deregister_from_tracker(tracker_host, tracker_port, file_hash, peer_id)
         except Exception as e:
             print(f"Error during cleanup: {e}")
     return cleanup
@@ -79,26 +79,30 @@ def download_file(peer, file_path):
         print(f"Error downloading file: {e}")
 
 # Signal handler for CTRL+C
+shutdown_flag = False
+
 def signal_handler(sig, frame):
+    global shutdown_flag
     print("Caught interrupt signal, shutting down...")
-    sys.exit(0)
+    shutdown_flag = True
 
 signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == "__main__":
+    peer_id = sys.argv[1]
     # Configuration
     tracker_host = '192.168.1.102'
-    tracker_port = 6881
-    file_hash = 'example_hash'
+    tracker_port = 4000
+    file_hash = 'example_hash' + peer_id
     peer_host = '0.0.0.0'  # Allow connections from external devices
-    peer_port = 6882
-    file_path = 'example_file.txt'
+    peer_port = 4000 + int(peer_id)
+    file_path = 'example_file.txt' # List of file_hash
 
     # Register cleanup with atexit
-    atexit.register(create_cleanup(tracker_host, tracker_port, file_hash, peer_host, peer_port))
+    atexit.register(create_cleanup(tracker_host, tracker_port, file_hash, peer_id))
 
     # Register with tracker
-    register_with_tracker(tracker_host, tracker_port, file_hash, f"{peer_host}:{peer_port}")
+    register_with_tracker(tracker_host, tracker_port, file_hash, peer_id)
 
     # Start serving the file
     threading.Thread(target=serve_file, args=(file_path, peer_host, peer_port)).start()
