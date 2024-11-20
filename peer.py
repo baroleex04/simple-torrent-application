@@ -6,6 +6,9 @@ import time
 import threading
 import signal
 import hashlib
+tracker_host = '192.168.1.109'
+    # tracker_host = '10.128.236.22'
+tracker_port = 4000
 
 def compute_info_hash(info):
     """Compute the SHA-1 hash of the `info` dictionary."""
@@ -26,29 +29,39 @@ def update_torrent_json(peer_id, file_path, chunk_size):
         # Load the current torrent.json content
         with open(torrent_path, 'r') as torrent_file:
             torrent_data = json.load(torrent_file)
+            
+        existing_pieces = {piece["piece"] for piece in torrent_data["info"]["pieces"]}
+        existing_files = {tuple(file_info["path"]) for file_info in torrent_data["info"]["files"]}
 
         # Compute file metadata
         file_name = os.path.basename(file_path)
         file_size = os.path.getsize(file_path)
         file_chunks = []
+        
+        file_key = (f"peer{peer_id}", file_name)
+        if file_key in existing_files:
+            print(f"File {file_name} already exists in torrent.json. Adding only new pieces.")
+        else:
+            # If file is not listed, prepare metadata for addition
+            file_metadata = {
+                "path": [f"peer{peer_id}", file_name],
+                "length": file_size
+            }
+            torrent_data["info"]["files"].append(file_metadata)
+            print(f"Added file metadata: {file_metadata}")
 
         # Generate SHA1 hashes for each chunk
         with open(file_path, 'rb') as f:
             while chunk := f.read(chunk_size):
                 piece_hash = hashlib.sha1(chunk).hexdigest()
-                file_chunks.append({"piece": piece_hash})
-                print(f"Generated hash: {piece_hash}")
+                if piece_hash not in existing_pieces:
+                    file_chunks.append({"piece": piece_hash})
+                    print(f"Added hash: {piece_hash}")
+                else:
+                    print(f"Duplicate hash found, skipping: {piece_hash}")
 
         # Update pieces list
         torrent_data['info']['pieces'].extend(file_chunks)
-
-        # Update files list
-        file_metadata = {
-            "path": [f"peer{peer_id}", file_name],
-            "length": file_size
-        }
-        torrent_data['info']['files'].append(file_metadata)
-        print(f"Added file metadata: {file_metadata}")
 
         # Save updated data to torrent.json
         with open(torrent_path, 'w') as torrent_file:
@@ -62,6 +75,66 @@ def update_torrent_json(peer_id, file_path, chunk_size):
     except Exception as e:
         print(f"Error updating torrent.json: {e}")
         return None
+    
+def update_torrent_transfer_pieces(peer_id, file_name, file_size, chunk_path, chunk_size):
+    """Update the torrent.json file after receiving pieces."""
+    try:
+        # Define the torrent file path
+        torrent_path = f"peer{peer_id}/torrent.json"
+
+        # Ensure the file and chunk directory exist
+        if not os.path.exists(torrent_path):
+            print(f"Error: {torrent_path} not found.")
+            return None
+        if not os.path.isdir(chunk_path):
+            print(f"Error: Chunk path {chunk_path} is not a directory.")
+            return None
+
+        # Load the current torrent.json content
+        with open(torrent_path, 'r') as torrent_file:
+            torrent_data = json.load(torrent_file)
+
+        # Check for existing pieces and files in torrent.json
+        existing_pieces = {piece["piece"] for piece in torrent_data["info"]["pieces"]}
+        existing_files = {tuple(file_info["path"]) for file_info in torrent_data["info"]["files"]}
+
+        # Add file metadata if not present
+        file_key = (f"peer{peer_id}", file_name)
+        if file_key not in existing_files:
+            file_metadata = {
+                "path": [f"peer{peer_id}", file_name],
+                "length": file_size
+            }
+            torrent_data["info"]["files"].append(file_metadata)
+            print(f"Added file metadata: {file_metadata}")
+
+        # Read chunks and update pieces
+        updated_pieces = []
+        for chunk_file in sorted(os.listdir(chunk_path)):  # Ensure chunks are in order
+            chunk_file_path = os.path.join(chunk_path, chunk_file)
+            if os.path.isfile(chunk_file_path):
+                with open(chunk_file_path, 'rb') as chunk:
+                    chunk_data = chunk.read()
+                    piece_hash = hashlib.sha1(chunk_data).hexdigest()
+                    if piece_hash not in existing_pieces:
+                        updated_pieces.append({"piece": piece_hash})
+                        print(f"Added piece hash from {chunk_file}: {piece_hash}")
+            else:
+                print(f"Skipping non-file entry in chunks: {chunk_file}")
+
+        # Update the pieces list
+        torrent_data["info"]["pieces"].extend(updated_pieces)
+
+        # Save the updated torrent.json
+        with open(torrent_path, 'w') as torrent_file:
+            json.dump(torrent_data, torrent_file, indent=4)
+            print(f"Updated torrent.json successfully for peer {peer_id}.")
+
+        return torrent_data["info"]
+    except Exception as e:
+        print(f"Error updating torrent.json from pieces: {e}")
+        return None
+
         
 # function to handle splitting file
 def split_file(file_path, chunk_size):
@@ -126,6 +199,73 @@ def upload_file(peer_id, file_path, chunk_size=1024):
     except Exception as e:
         print(f"An error occurred while uploading the file: {e}")
     
+def combine_and_validate_pieces(received_folder, output_file):
+    """Combine pieces into a file and validate its integrity."""
+    try:
+        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        piece_files = sorted(os.listdir(received_folder))  # Ensure correct order
+        with open(output_file, 'wb') as output:
+            for piece_file in piece_files:
+                piece_path = os.path.join(received_folder, piece_file)
+                with open(piece_path, 'rb') as pf:
+                    output.write(pf.read())
+
+        print(f"File combined into {output_file} successfully.")
+    except Exception as e:
+        print(f"Error combining pieces: {e}")
+
+def notify_tracker_of_update(peer_id, file_name):
+    try:
+        torrent_path = f"peer{peer_id}/torrent.json"
+        chunks_path = f"peer{peer_id}/chunks"
+        if not os.path.exists(torrent_path):
+            print(f"Error: Torrent file {torrent_path} not found.")
+            return
+        if not os.path.exists(chunks_path):
+            print(f"Error: Chunk path {chunks_path} not found.")
+            return
+        # Load the current torrent.json content
+        with open(torrent_path, 'r') as torrent_file:
+            torrent_data = json.load(torrent_file)
+        # Ensure 'pieces' exists in the JSON structure
+        if "info" not in torrent_data or "pieces" not in torrent_data["info"]:
+            print(f"Error: Invalid torrent.json structure in {torrent_path}.")
+            return
+        # Read all chunks and compute their hashes
+        updated_pieces = []
+        for chunk_file in sorted(os.listdir(chunks_path)):  # Ensure proper order
+            chunk_file_path = os.path.join(chunks_path, chunk_file)
+            if os.path.isfile(chunk_file_path):  # Ensure it's a file
+                with open(chunk_file_path, 'rb') as chunk:
+                    chunk_data = chunk.read()
+                    piece_hash = hashlib.sha1(chunk_data).hexdigest()
+                    updated_pieces.append({"piece": piece_hash})
+                    print(f"Computed hash for chunk {chunk_file}: {piece_hash}")
+            else:
+                print(f"Skipping non-file entry in chunks: {chunk_file}")
+
+        # Update the pieces list in torrent.json
+        torrent_data["info"]["pieces"] = updated_pieces
+        print(f"Updated pieces: {updated_pieces}")
+        
+        # Load the updated torrent.json
+        with open(torrent_path, 'r') as torrent_file:
+            torrent_data = json.load(torrent_file)
+
+        # Compute the new info_hash
+        # new_info_hash = compute_info_hash(torrent_data["info"])
+        new_info_hash = torrent_data["info"]
+
+        # Notify the tracker
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.connect((tracker_host, tracker_port))
+            update_message = f"UPDATE_PEER|{peer_id}|{json.dumps(new_info_hash)}"
+            s.sendall(update_message.encode('utf-8'))
+            response = s.recv(1024).decode('utf-8')
+            print(f"Tracker response: {response}")
+    except Exception as e:
+        print(f"Error notifying tracker: {e}")
+
 # Handle other peers' connections (e.g., file requests or messages)
 def handle_peer_connection(conn, peer_id):
     try:
@@ -151,31 +291,40 @@ def handle_peer_connection(conn, peer_id):
             # Split the file into chunks for storage
             upload_file(peer_id, file_path, chunk_size)
             conn.sendall(f"File {file_name} uploaded and split successfully.".encode('utf-8'))
-        if data.startswith("FILE_TRANSFER"):
-            _, file_name = data.split('|')
-
-            # Acknowledge readiness to receive the file
+        if data.startswith("PIECE_TRANSFER"):
+            _, file_name, file_size, chunk_size, total_pieces = data.split('|')
+            chunk_size = int(chunk_size)
+            total_pieces = int(total_pieces)
+            received_folder = f"peer{peer_id}/chunks"
+            os.makedirs(received_folder, exist_ok=True)
             conn.sendall("READY".encode('utf-8'))
 
-            # Folder to store received files
-            received_folder = f"peer{peer_id}/received_files"
-            os.makedirs(received_folder, exist_ok=True)
-            file_path = os.path.join(received_folder, file_name)
+            for _ in range(total_pieces):
+                piece_metadata = conn.recv(1024).decode('utf-8')
+                if piece_metadata.startswith("PIECE"):
+                    _, piece_name, expected_hash = piece_metadata.split('|')
+                    piece_path = os.path.join(received_folder, piece_name)
+                    with open(piece_path, 'wb') as piece_file:
+                        piece_data = conn.recv(chunk_size)
+                        piece_file.write(piece_data)
+                        actual_hash = hashlib.sha1(piece_data).hexdigest()
+                        if actual_hash == expected_hash:
+                            conn.sendall("RECEIVED".encode('utf-8'))
+                        else:
+                            conn.sendall("HASH_MISMATCH".encode('utf-8'))
+                            return
 
-            print(f"Preparing to receive file: {file_name}")
-            
-            # Open the file in write mode
-            with open(file_path, 'wb') as f:
-                while True:
-                    chunk = conn.recv(1024)
-                    if not chunk:  # End of file
-                        break
-                    f.write(chunk)
+            # Update torrent.json with received pieces
+            updated_info = update_torrent_transfer_pieces(peer_id, file_name, int(file_size), received_folder, chunk_size)
 
-            print(f"File {file_name} received and saved to {received_folder}.")
-            
-            # Send confirmation back to the sender
-            conn.sendall(f"File {file_name} received successfully.".encode('utf-8'))
+            # Notify tracker if update is successful
+            if updated_info:
+                notify_tracker_of_update(peer_id, file_name)
+
+            # Combine pieces and validate
+            print(f"All pieces of {file_name} received successfully. Validating...")
+            combine_and_validate_pieces(received_folder, f"peer{peer_id}/received_files/{file_name}")
+            conn.sendall("TRANSFER_COMPLETE".encode('utf-8'))
         else:
             print(f"Unknown message received: {data}")
             conn.sendall("Invalid request".encode('utf-8'))
@@ -262,40 +411,53 @@ def request_peers_list(tracker_host, tracker_port, peer_id):
         print(f"Error while requesting peers list: {e}")
         
 # Send a file to another peer
-def send_file_to_peer(peer_host, peer_port, peer_id, file_name):
+def send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_size):
+    """Send file pieces to another peer."""
     try:
+        file_path = f"peer{peer_id}/chunks"
+        # Define the torrent file path
+        file_info = f"peer{peer_id}/torrent.json"
+
+        # Ensure the file exists
+        if not os.path.exists(file_info):
+            print(f"Error: {file_info} not found.")
+            return None
+
+        # Load the current torrent.json content
+        with open(file_info, 'r') as file:
+            file_data = json.load(file)
+        for file_info in file_data["info"]["files"]:
+            if file_info["path"][-1] == file_name:  # Match the last part of the path
+                file_size = file_info["length"]
+        pieces = os.listdir(file_path)
+
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((peer_host, peer_port))
+            # Send metadata to the receiver
+            metadata_message = f"PIECE_TRANSFER|{file_name}|{file_size}|{chunk_size}|{len(pieces)}"
+            s.sendall(metadata_message.encode('utf-8'))
 
-            # Construct the full file path
-            file_path = f"peer{peer_id}/{file_name}"
+            response = s.recv(1024).decode('utf-8')
+            if response != "READY":
+                print(f"Peer not ready for piece transfer: {response}")
+                return
 
-            # Check if the file exists
-            if os.path.exists(file_path):
-                # Send metadata (file name) first
-                s.sendall(f"FILE_TRANSFER|{file_name}".encode('utf-8'))
-                response = s.recv(1024).decode('utf-8')
-                if response != "READY":
-                    print(f"Peer not ready for file transfer: {response}")
-                    return
-
-                # Send the file content
-                with open(file_path, 'rb') as f:
-                    while chunk := f.read(1024):
-                        s.sendall(chunk)
-
-                print(f"File {file_name} sent successfully to peer {peer_host}:{peer_port}.")
-                s.shutdown(socket.SHUT_WR)  # Indicate transfer complete
-
-                # Await confirmation
-                response = s.recv(1024)
-                print(f"Response from peer: {response.decode('utf-8')}")
-            else:
-                print(f"Error: File {file_path} does not exist.")
+            for piece_name in pieces:
+                piece_path = os.path.join(file_path, piece_name)
+                with open(piece_path, 'rb') as piece_file:
+                    piece_data = piece_file.read()
+                    piece_hash = hashlib.sha1(piece_data).hexdigest()
+                    piece_message = f"PIECE|{piece_name}|{piece_hash}"
+                    s.sendall(piece_message.encode('utf-8'))
+                    time.sleep(0.1)  # Wait for receiver to prepare
+                    s.sendall(piece_data)
+                    response = s.recv(1024).decode('utf-8')
+                    if response != "RECEIVED":
+                        print(f"Error transferring piece {piece_name}: {response}")
+                        return
+            print("All pieces sent successfully.")
     except Exception as e:
-        print(f"Error sending file to peer: {e}")
-
-
+        print(f"Error sending file pieces: {e}")
 
 def shutdown_gracefully(signal, frame):
     print("\n[INFO] Shutting down the peer server...")
@@ -305,9 +467,6 @@ if __name__ == "__main__":
     peer_id = sys.argv[1]
     peer_port = int(sys.argv[2])
     # Configuration
-    tracker_host = '192.168.1.109'
-    # tracker_host = '10.128.236.22'
-    tracker_port = 4000
     file = open(f'peer{peer_id}/torrent.json')
     peer_data = json.load(file)
     info = peer_data["info"]
@@ -335,7 +494,7 @@ if __name__ == "__main__":
             if command.startswith("SEND"):
                 _, peer_host, peer_port, file_name = command.split()
                 peer_port = int(peer_port)
-                send_file_to_peer(peer_host, peer_port, peer_id, file_name)
+                send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_size)
             if command.startswith("UPLOAD"):
                 _, file_path = command.split()
                 if os.path.exists(file_path):
@@ -349,6 +508,7 @@ if __name__ == "__main__":
                         try:
                             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                 s.connect((tracker_host, tracker_port))
+                                print(f"Update peer hereee: {peer_id}")
                                 update_message = f"UPDATE_PEER|{peer_id}|{json.dumps(new_info_hash)}"
                                 s.sendall(update_message.encode('utf-8'))
                                 response = s.recv(1024).decode('utf-8')
