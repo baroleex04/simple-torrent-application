@@ -129,25 +129,31 @@ def handle_peer_connection(conn, peer_id):
             # Split the file into chunks for storage
             upload_file(peer_id, file_path, chunk_size)
             conn.sendall(f"File {file_name} uploaded and split successfully.".encode('utf-8'))
-        # Check if it's a file transfer request
         if data.startswith("FILE_TRANSFER"):
-            _, filename = data.split('|')
+            _, file_name = data.split('|')
+
+            # Acknowledge readiness to receive the file
+            conn.sendall("READY".encode('utf-8'))
+
             # Folder to store received files
             received_folder = f"peer{peer_id}/received_files"
-
-            # Ensure the folder exists
             os.makedirs(received_folder, exist_ok=True)
-            file_path = os.path.join(received_folder, filename)
-            print(f"Preparing to receive file: {filename}")
+            file_path = os.path.join(received_folder, file_name)
+
+            print(f"Preparing to receive file: {file_name}")
+            
+            # Open the file in write mode
             with open(file_path, 'wb') as f:
                 while True:
                     chunk = conn.recv(1024)
-                    if not chunk:
+                    if not chunk:  # End of file
                         break
                     f.write(chunk)
-                    
-            print(f"File {filename} received and saved to {received_folder}.")
-            conn.sendall(f"File {filename} received successfully.".encode('utf-8'))
+
+            print(f"File {file_name} received and saved to {received_folder}.")
+            
+            # Send confirmation back to the sender
+            conn.sendall(f"File {file_name} received successfully.".encode('utf-8'))
         else:
             print(f"Unknown message received: {data}")
             conn.sendall("Invalid request".encode('utf-8'))
@@ -238,19 +244,24 @@ def send_file_to_peer(peer_host, peer_port, peer_id, file_name):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((peer_host, peer_port))
-            
-            # file path to the file
+
+            # Construct the full file path
             file_path = f"peer{peer_id}/{file_name}"
 
-            # Send to file kia
-            s.sendall(f"FILE_TRANSFER|{file_name}".encode('utf-8'))
-
-            # Send the file content
+            # Check if the file exists
             if os.path.exists(file_path):
+                # Send metadata (file name) first
+                s.sendall(f"FILE_TRANSFER|{file_name}".encode('utf-8'))
+                response = s.recv(1024).decode('utf-8')
+                if response != "READY":
+                    print(f"Peer not ready for file transfer: {response}")
+                    return
+
+                # Send the file content
                 with open(file_path, 'rb') as f:
-                    print("Send file!!!")
                     while chunk := f.read(1024):
                         s.sendall(chunk)
+
                 print(f"File {file_name} sent successfully to peer {peer_host}:{peer_port}.")
                 s.shutdown(socket.SHUT_WR)  # Indicate transfer complete
 
@@ -261,6 +272,7 @@ def send_file_to_peer(peer_host, peer_port, peer_id, file_name):
                 print(f"Error: File {file_path} does not exist.")
     except Exception as e:
         print(f"Error sending file to peer: {e}")
+
 
 
 def shutdown_gracefully(signal, frame):
