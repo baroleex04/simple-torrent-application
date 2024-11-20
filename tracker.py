@@ -54,6 +54,24 @@ def handle_client(conn, addr):
                 else:
                     print(f"peer_id {peer_id} already exists in the list.")
                     conn.sendall(b"EXISTED PEER ID, CAN NOT REGISTERED")
+            elif data.startswith("UPDATE_PEER"):
+                _, peer_id, info_hash = data.split('|')
+                print(f"[UPDATE PEER] Peer {peer_id} updated.")
+
+                # Parse the info_hash
+                info_hash_object = json.loads(info_hash)
+
+                # Find the peer in the tracker
+                peer_to_update = next((obj for obj in tracker_data if obj["peer_id"] == peer_id), None)
+                if peer_to_update:
+                    peer_to_update["info_hash"] = info_hash_object
+                    save_tracker_data()
+                    # Send acknowledgment back to the peer
+                    conn.sendall(f"UPDATED|{peer_id}".encode('utf-8'))
+                    print(f"Tracker info_hash updated for peer {peer_id}.")
+                else:
+                    print(f"Peer {peer_id} not found in tracker data.")
+                    conn.sendall(f"ERROR|Peer {peer_id} not found.".encode('utf-8'))
             elif data.startswith("DISCONNECT"):
                 _, peer_id = data.split('|')
                 print(f"[INFO] Peer {peer_id} requested to disconnect.")

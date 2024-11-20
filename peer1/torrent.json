@@ -1,7 +1,7 @@
 {
     "announce": "0.0.0.0:4000",
     "info": {
-        "name": "peer1",
+        "name": "1",
         "piece length": 5,
         "pieces": [
             {
@@ -24,7 +24,7 @@
             {
                 "path": [
                     "peer1",
-                    "test_file.txt"
+                    "test_file_1.txt"
                 ],
                 "length": 25
             }

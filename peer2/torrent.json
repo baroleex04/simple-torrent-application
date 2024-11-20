@@ -1,7 +1,7 @@
 {
     "announce": "0.0.0.0:4000",
     "info": {
-      "name": "peer2",
+      "name": "2",
       "piece length": 5,
       "pieces": [
         {"piece1": "hash1"},

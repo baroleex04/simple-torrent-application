@@ -7,43 +7,61 @@ import threading
 import signal
 import hashlib
 
+def compute_info_hash(info):
+    """Compute the SHA-1 hash of the `info` dictionary."""
+    info_str = json.dumps(info, sort_keys=True).encode('utf-8')
+    return hashlib.sha1(info_str).hexdigest()
+
 def update_torrent_json(peer_id, file_path, chunk_size):
     """Update the torrent.json file after uploading a file."""
     try:
-        # Read the current torrent.json
+        # Define the torrent file path
         torrent_path = f"peer{peer_id}/torrent.json"
+
+        # Ensure the file exists
+        if not os.path.exists(torrent_path):
+            print(f"Error: {torrent_path} not found.")
+            return None
+
+        # Load the current torrent.json content
         with open(torrent_path, 'r') as torrent_file:
             torrent_data = json.load(torrent_file)
 
-        # Compute the file metadata
+        # Compute file metadata
         file_name = os.path.basename(file_path)
         file_size = os.path.getsize(file_path)
         file_chunks = []
 
-        # Generate hashes for each chunk
+        # Generate SHA1 hashes for each chunk
         with open(file_path, 'rb') as f:
             while chunk := f.read(chunk_size):
-                file_chunks.append({"piece": hashlib.sha1(chunk).hexdigest()})
+                piece_hash = hashlib.sha1(chunk).hexdigest()
+                file_chunks.append({"piece": piece_hash})
+                print(f"Generated hash: {piece_hash}")
 
-        # Update the pieces list
+        # Update pieces list
         torrent_data['info']['pieces'].extend(file_chunks)
 
-        # Update the files list
+        # Update files list
         file_metadata = {
             "path": [f"peer{peer_id}", file_name],
             "length": file_size
         }
         torrent_data['info']['files'].append(file_metadata)
+        print(f"Added file metadata: {file_metadata}")
 
-        # Save the updated torrent.json
+        # Save updated data to torrent.json
         with open(torrent_path, 'w') as torrent_file:
             json.dump(torrent_data, torrent_file, indent=4)
 
-        print(f"Updated torrent.json for peer {peer_id} with file {file_name}.")
-    except FileNotFoundError:
-        print(f"Error: torrent.json not found for peer {peer_id}.")
+        # Compute new info_hash
+        new_info_hash = torrent_data["info"]
+        print(f"Computed new info_hash: {new_info_hash}")
+
+        return new_info_hash
     except Exception as e:
         print(f"Error updating torrent.json: {e}")
+        return None
         
 # function to handle splitting file
 def split_file(file_path, chunk_size):
@@ -78,7 +96,6 @@ def combine_files(part_files, output_file):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-# function to upload a file on a peer
 # Function to handle uploading a file and splitting it
 def upload_file(peer_id, file_path, chunk_size=1024):
     """Uploads a file by splitting it into chunks and storing them locally."""
@@ -86,19 +103,24 @@ def upload_file(peer_id, file_path, chunk_size=1024):
         # Create a folder for storing chunks for this peer
         chunks_folder = f"peer{peer_id}/chunks"
         os.makedirs(chunks_folder, exist_ok=True)
-        
-        # Split the file into chunks
+
+        file_name = os.path.basename(file_path)
+        file_size = os.path.getsize(file_path)
+
+        file_chunks = []
         with open(file_path, 'rb') as f:
-            file_name = os.path.basename(file_path)
             part_num = 0
             while chunk := f.read(chunk_size):
                 part_file_name = os.path.join(chunks_folder, f"{part_num}_{file_name}")
                 with open(part_file_name, 'wb') as part_file:
                     part_file.write(chunk)
                 print(f"Stored chunk: {part_file_name}")
+                file_chunks.append({"piece": hashlib.sha1(chunk).hexdigest()})
                 part_num += 1
-        
+
         print(f"File {file_name} has been split and stored in {chunks_folder}.")
+        
+        print("File upload complete.")
     except FileNotFoundError:
         print("File not found. Please provide a valid file path.")
     except Exception as e:
@@ -320,11 +342,22 @@ if __name__ == "__main__":
                     print(f"Uploading file: {file_path}...")
                     # Use the upload_file function to split and store locally
                     upload_file(peer_id, file_path, chunk_size)
-                    # Update the torrent.json
-                    update_torrent_json(peer_id, file_path, chunk_size)
-                    print("File upload complete.")
-                else:
-                    print(f"Error: File {file_path} does not exist.")
+                    # Update the torrent.json and compute the new info_hash
+                    new_info_hash = update_torrent_json(peer_id, file_path, chunk_size)
+                    if new_info_hash:
+                    # Notify the tracker about the updated info_hash
+                        try:
+                            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                                s.connect((tracker_host, tracker_port))
+                                update_message = f"UPDATE_PEER|{peer_id}|{json.dumps(new_info_hash)}"
+                                s.sendall(update_message.encode('utf-8'))
+                                response = s.recv(1024).decode('utf-8')
+                                print(f"Tracker response: {response}")
+                        except Exception as e:
+                            print(f"Error notifying tracker: {e}")
+                            print("File upload complete.")
+                    else:
+                        print(f"Error: File {file_path} does not exist.")
             elif command == "EXIT":
                 print("Exiting...")
                 deregister_from_tracker(tracker_host, tracker_port, peer_id)
