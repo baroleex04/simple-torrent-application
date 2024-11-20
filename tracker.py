@@ -50,7 +50,7 @@ def handle_client(conn, addr):
                 if not any(obj["peer_id"] == peer_id for obj in tracker_data):
                     tracker_data.append(new_peer)  # Append new object
                     save_tracker_data()
-                    conn.sendall(b"REGISTERED")
+                    conn.sendall(f"REGISTERED|{peer_ip}".encode('utf-8'))
                 else:
                     print(f"peer_id {peer_id} already exists in the list.")
                     conn.sendall(b"EXISTED PEER ID, CAN NOT REGISTERED")
@@ -90,6 +90,7 @@ def start_tracker(host='0.0.0.0', port=4000):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         server.bind((host, port))
+        # print(socket.gethostbyname_ex(socket.gethostname())[-1][1])
         print(f"Tracker running on {host}:{port}")
     except OSError as e:
         print(f"[ERROR] {e}. The port {port} might be already in use.")
