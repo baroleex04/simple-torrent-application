@@ -30,12 +30,11 @@ def handle_client(conn, addr):
         try:
             data = conn.recv(4096).decode('utf-8')
             if data.startswith("REGISTER"):
-                _, peer_id, info_hash = data.split('|')
+                _, peer_id, peer_port, info_hash = data.split('|')
                 print(f"[REGISTER] Peer {peer_id} connected.")
                 # Write to tracker_data the new peer
                 # info_hash, peer_id, port, ip
                 peer_ip = addr[0]
-                peer_port = addr[1]
                 info_hash_object = json.loads(info_hash)
                 new_peer = {
                     "info_hash": info_hash_object,
@@ -54,6 +53,37 @@ def handle_client(conn, addr):
                 else:
                     print(f"peer_id {peer_id} already exists in the list.")
                     conn.sendall(b"EXISTED PEER ID, CAN NOT REGISTERED")
+            elif data.startswith("PIECE_INFO_REQUEST"):
+                _, file_name = data.split("|")
+                print(f"[PIECE INFO REQUEST]| File requested: {file_name}")
+                with open('tracker1/tracker.json') as file_updated:
+                    tracker_data_updated = json.load(file_updated)
+                # print(tracker_data_updated)
+                # Mapping of pieces to the peers that own them
+                piece_to_peers = {}
+                for peer in tracker_data_updated:
+                    peer_ip = peer["ip"]
+                    peer_port = peer["port"]
+                    files = peer["info_hash"]["files"]
+                    
+                    for file in files:
+                        if file_name in file["path"]:
+                            pieces = peer["info_hash"]["pieces"]
+                            for piece in pieces:
+                                piece_hash = piece["piece"]
+                                if piece_hash not in piece_to_peers:
+                                    piece_to_peers[piece_hash] = []
+                                piece_to_peers[piece_hash].append({"ip": peer_ip, "port":peer_port})
+                piece_to_peers_json = json.dumps(piece_to_peers)
+                # print(f"Piece-to-peer mapping: {piece_to_peers_json}")
+
+                try:
+                    conn.sendall(piece_to_peers_json.encode('utf-8'))
+                    print(f"Send piece-to-peer mapping for file {file_name}")
+                except Exception as e:
+                    print(f"[ERROR] Error sending piece info: {e}")
+                    conn.sendall(b"ERROR|Failed to retrieve piece info")
+                
             elif data.startswith("UPDATE_PEER"):
                 _, peer_id, info_hash = data.split('|')
                 print(f"[UPDATE PEER] Peer {peer_id} updated.")
