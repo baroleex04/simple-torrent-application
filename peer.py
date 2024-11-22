@@ -8,8 +8,9 @@ import signal
 import hashlib
 from datetime import datetime
 
-tracker_host = '192.168.1.109'
-    # tracker_host = '10.128.236.22'
+# tracker_host = '192.168.1.109'
+tracker_host = '192.168.1.6'
+# tracker_host = '10.128.236.22'
 tracker_port = 4000
 download_tracker = set()
 
@@ -99,7 +100,20 @@ def update_torrent_with_chunks(peer_id, file_name=None):
                 if file_metadata not in torrent_data["info"]["files"]:
                     torrent_data["info"]["files"].append(file_metadata)
                     print(f"Added file metadata: {file_metadata}")
-
+        with open(torrent_path, 'r') as torrent_file:
+            torrent_data = json.load(torrent_file)
+        new_info_hash = torrent_data["info"]
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.connect((tracker_host, tracker_port))
+                print(f"Update peer hereee: {peer_id}")
+                update_message = f"UPDATE_PEER|{peer_id}|{json.dumps(new_info_hash)}"
+                s.sendall(update_message.encode('utf-8'))
+                response = s.recv(1024).decode('utf-8')
+                print(f"Tracker response: {response}")
+        except Exception as e:
+            print(f"Error notifying tracker: {e}")
+            print("Update on tracker completed.")
         # Save the updated torrent.json
         with open(torrent_path, 'w') as torrent_file:
             json.dump(torrent_data, torrent_file, indent=4)

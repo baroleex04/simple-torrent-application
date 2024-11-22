@@ -4,8 +4,40 @@
         "name": "3",
         "piece length": 5,
         "pieces": [
+            {
+                "piece": "18fe27a58c0f20e392544e5ccb517042b1ade178"
+            },
+            {
+                "piece": "4ce1bfc0c09203fb2396ee2b942e1d75717d91c3"
+            },
+            {
+                "piece": "5d9eb30c12b2b922423b70ac5bed6a8a9d7f6d57"
+            },
+            {
+                "piece": "8a3e14cff86931bd16d31add5d64379bab65a392"
+            },
+            {
+                "piece": "bfb95ba2d97a22da268b18a482f0429fe4aa9841"
+            },
+            {
+                "piece": "f298c55a9925657aca179c03b4039dd0ad7269ea"
+            }
         ],
         "files": [
+            {
+                "path": [
+                    "peer3",
+                    "test_file_2.txt"
+                ],
+                "length": 30
+            },
+            {
+                "path": [
+                    "peer3",
+                    "test_file_2.txt"
+                ],
+                "length": 15
+            }
         ]
     },
     "annouce list": []
