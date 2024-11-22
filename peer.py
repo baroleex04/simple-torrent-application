@@ -80,15 +80,11 @@ def update_torrent_with_chunks(peer_id, file_name=None):
 
         # Read all chunks and update torrent.json
         for chunk_file in sorted(os.listdir(chunks_path)):
-            chunk_file_path = os.path.join(chunks_path, chunk_file)
-            if os.path.isfile(chunk_file_path):  # Ensure it's a file
-                with open(chunk_file_path, 'rb') as chunk:
-                    chunk_data = chunk.read()
-                    piece_hash = hashlib.sha1(chunk_data).hexdigest()
-                    if piece_hash not in existing_pieces:
-                        updated_pieces.append({"piece": piece_hash})
-                        print(f"Added new piece {piece_hash} to torrent.json.")
-
+            chunk_hash, _ = os.path.splitext(chunk_file)
+            if chunk_hash not in existing_pieces:
+                updated_pieces.append({"piece": chunk_hash})
+                print(f"Added new piece {chunk_hash} to torrent.json.")
+    
         # Add new pieces to the torrent data
         torrent_data["info"]["pieces"].extend(updated_pieces)
 

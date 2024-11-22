@@ -4,33 +4,8 @@
         "name": "3",
         "piece length": 5,
         "pieces": [
-            {
-                "piece": "df51e37c269aa94d38f93e537bf6e2020b21406c"
-            },
-            {
-                "piece": "df51e37c269aa94d38f93e537bf6e2020b21406c"
-            },
-            {
-                "piece": "df51e37c269aa94d38f93e537bf6e2020b21406c"
-            },
-            {
-                "piece": "df51e37c269aa94d38f93e537bf6e2020b21406c"
-            },
-            {
-                "piece": "df51e37c269aa94d38f93e537bf6e2020b21406c"
-            },
-            {
-                "piece": "df51e37c269aa94d38f93e537bf6e2020b21406c"
-            }
         ],
         "files": [
-            {
-                "path": [
-                    "peer3",
-                    "test_file_2.txt"
-                ],
-                "length": 30
-            }
         ]
     },
     "annouce list": []

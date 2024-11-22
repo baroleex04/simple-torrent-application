@@ -5,7 +5,6 @@ import threading
 import json
 import signal
 import sys
-import time
 
 # Opening JSON file and load on tracker_data
 file = open('tracker1/tracker.json')
