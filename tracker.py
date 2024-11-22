@@ -23,6 +23,36 @@ def get_peers_excluding(peer_id):
             peers.append(peer)
     return peers
 
+def find_file_index(data, target_file):
+    for peer in data:
+        files = peer["info_hash"]["files"]
+        for index, file in enumerate(files):
+            if target_file in file["path"]:
+                return index
+    return -1  # File not found
+
+def find_file_info_with_peers(data, target_file):
+    piece_to_peers = {}
+    for peer in data:
+        peer_ip = peer["ip"]
+        peer_port = peer["port"]
+        files = peer["info_hash"]["files"]
+        
+        for file in files:
+            if target_file in file["path"]:
+                file_length = file["length"]
+                piece_length = peer["info_hash"]["piece length"]
+                num_pieces = -(-file_length // piece_length)  # Ceiling division
+                pieces = peer["info_hash"]["pieces"][:num_pieces]
+                
+                for piece in pieces:
+                    piece_hash = piece["piece"]
+                    if piece_hash not in piece_to_peers:
+                        piece_to_peers[piece_hash] = []
+                    piece_to_peers[piece_hash].append({"ip": peer_ip, "port": peer_port})
+    
+    return piece_to_peers
+
 # Function to handle client connection
 def handle_client(conn, addr):
     while True:
