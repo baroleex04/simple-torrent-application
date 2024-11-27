@@ -3,8 +3,53 @@
     "info": {
         "name": "3",
         "piece length": 5,
-        "pieces": [],
-        "files": []
+        "pieces": [
+            {
+                "piece": "5ea99ca0c60e937d2f99b49c48fbac542ecf9ba9",
+                "file_name": "test_file_1.txt",
+                "file_path": "peer3",
+                "index": 0
+            },
+            {
+                "piece": "67c77a9c13fa859fd4a82e460dbe573a68de0163",
+                "file_name": "test_file_1.txt",
+                "file_path": "peer3",
+                "index": 1
+            },
+            {
+                "piece": "a3a306bfa62164c6099fabcf00d7fd0945492c81",
+                "file_name": "test_file_1.txt",
+                "file_path": "peer3",
+                "index": 2
+            },
+            {
+                "piece": "69ed2c783e062065bd5fbd82a86a861c04177d70",
+                "file_name": "test_file_1.txt",
+                "file_path": "peer3",
+                "index": 3
+            },
+            {
+                "piece": "e31ecb55bc3a14df880740e7338cabd7fa865503",
+                "file_name": "test_file_1.txt",
+                "file_path": "peer3",
+                "index": 4
+            },
+            {
+                "piece": "f1ba138ab3459af211c3c2e804d4418a741825c8",
+                "file_name": "test_file_1.txt",
+                "file_path": "peer3",
+                "index": 5
+            }
+        ],
+        "files": [
+            {
+                "path": [
+                    "peer3",
+                    "test_file_1.txt"
+                ],
+                "length": 28
+            }
+        ]
     },
     "announce list": []
 }
