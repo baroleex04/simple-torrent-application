@@ -8,10 +8,7 @@ import signal
 import hashlib
 from datetime import datetime
 
-# tracker_host = '192.168.0.73'
-tracker_host = '192.168.1.4'
-# tracker_host = '192.168.1.109'
-# tracker_host = '10.128.236.22'
+tracker_host = str(socket.gethostbyname(socket.gethostname()))
 tracker_port = 4000
 download_tracker = set()
 
