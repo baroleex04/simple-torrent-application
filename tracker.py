@@ -38,22 +38,6 @@ def save_tracker_data():
     with open('tracker1/tracker.json', 'w') as file:
         json.dump(tracker_data, file, indent=4)
         
-# def get_peers_excluding(peer_id):
-#     """
-#     Retrieve a list of all peers excluding the given peer ID.
-
-#     Args:
-#         peer_id (str): The peer ID to exclude from the returned list.
-
-#     Returns:
-#         list: A list of peers, each represented as a dictionary, excluding the given peer.
-#     """
-#     peers = []
-#     for peer in tracker_data:
-#         if peer["peer_id"] != peer_id:
-#             peers.append(peer)
-#     return peers
-
 def get_peers_excluding(peer_id):
     """
     Retrieve a list of all peers excluding the given peer ID.
@@ -98,50 +82,121 @@ def handle_register(conn, addr, data):
         print(f"[ERROR] Registering peer failed: {e}")
         conn.sendall(b"ERROR|Registering failed")
 
+# def handle_piece_info_request(conn, data):
+#     """
+#     Handle the PIECE_INFO_REQUEST command to return file piece mapping to peers.
+#     Uses file locks to prevent multiple simultaneous requests for the same file.
+#     """
+#     _, file_name = data.split("|")
+#     print(f"[PIECE INFO REQUEST] File requested: {file_name}")
+
+#     # Get the lock for the requested file
+#     file_lock = get_file_lock(file_name)
+
+#     try:
+#         if not file_lock.acquire(blocking=False):
+#             print(f"[LOCKED] File {file_name} is currently being downloaded. Request denied.")
+#             conn.sendall(b"ERROR|File is currently locked for another download")
+#             return
+
+#         # Process the request
+#         piece_to_peers = {}
+#         for peer in tracker_data:
+#             peer_ip = peer["ip"]
+#             peer_port = peer["port"]
+#             files = peer["info_hash"].get("files", [])
+#             for file in files:
+#                 if file_name in file["path"]:
+#                     pieces = peer["info_hash"].get("pieces", [])
+#                     for piece in pieces:
+#                         piece_hash = piece["piece"]
+#                         if piece_hash not in piece_to_peers:
+#                             piece_to_peers[piece_hash] = []
+#                         piece_to_peers[piece_hash].append({"ip": peer_ip, "port": peer_port})
+
+#         piece_to_peers_json = json.dumps(piece_to_peers)
+#         conn.sendall(f"DATA_LENGTH|{len(piece_to_peers_json)}".encode('utf-8'))
+
+#         chunk_size = 4096
+#         for i in range(0, len(piece_to_peers_json), chunk_size):
+#             conn.sendall(piece_to_peers_json[i:i + chunk_size].encode('utf-8'))
+
+#         print(f"[SENT] Piece-to-peer mapping for file {file_name}")
+#     except Exception as e:
+#         print(f"[ERROR] Error sending piece info: {e}")
+#         conn.sendall(b"ERROR|Failed to retrieve piece info")
+#     finally:
+#         file_lock.release()
+#         print(f"[UNLOCKED] File {file_name} is now available for other peers.")
+
+import time  # Import time module for sleep
+
 def handle_piece_info_request(conn, data):
     """
     Handle the PIECE_INFO_REQUEST command to return file piece mapping to peers.
-    Uses file locks to prevent multiple simultaneous requests for the same file.
+    Filters only the pieces related to the requested file name and ensures peers
+    actually own the file.
     """
-    _, file_name = data.split("|")
-    print(f"[PIECE INFO REQUEST] File requested: {file_name}")
-
-    # Get the lock for the requested file
-    file_lock = get_file_lock(file_name)
-
     try:
+        # Extract the file name from the request
+        _, file_name = data.split("|")
+        print(f"[PIECE INFO REQUEST] File requested: {file_name}")
+
+        # Get a lock for the requested file
+        file_lock = get_file_lock(file_name)
+
         if not file_lock.acquire(blocking=False):
-            print(f"[LOCKED] File {file_name} is currently being downloaded. Request denied.")
+            # If the file is locked, notify the peer
+            print(f"[LOCKED] File {file_name} is currently being processed. Request denied.")
             conn.sendall(b"ERROR|File is currently locked for another download")
             return
+        
+        # Simulate a delay in processing the request
+        # print(f"[PROCESSING] Simulating processing delay for file {file_name}")
+        # time.sleep(10)  # Sleep for 10 seconds
 
-        # Process the request
+        # Prepare the piece-to-peers mapping
         piece_to_peers = {}
         for peer in tracker_data:
             peer_ip = peer["ip"]
             peer_port = peer["port"]
-            files = peer["info_hash"].get("files", [])
-            for file in files:
-                if file_name in file["path"]:
-                    pieces = peer["info_hash"].get("pieces", [])
-                    for piece in pieces:
-                        piece_hash = piece["piece"]
-                        if piece_hash not in piece_to_peers:
-                            piece_to_peers[piece_hash] = []
-                        piece_to_peers[piece_hash].append({"ip": peer_ip, "port": peer_port})
 
+            # Check if the peer has the requested file
+            file_exists = any(file_name in file["path"] for file in peer["info_hash"].get("files", []))
+            if not file_exists:
+                continue
+
+            # Add pieces belonging to the requested file
+            for piece in peer["info_hash"].get("pieces", []):
+                if piece.get("file_name") == file_name:
+                    piece_hash = piece["piece"]
+                    piece_index = piece["index"]  # Extract the index from the piece
+
+                    if piece_hash not in piece_to_peers:
+                        piece_to_peers[piece_hash] = []
+
+                    piece_to_peers[piece_hash].append({
+                        "ip": peer_ip,
+                        "port": peer_port,
+                        "index": piece_index  # Include the index
+                    })
+
+        # Convert the mapping to JSON
         piece_to_peers_json = json.dumps(piece_to_peers)
         conn.sendall(f"DATA_LENGTH|{len(piece_to_peers_json)}".encode('utf-8'))
 
+        # Send the JSON data in chunks
         chunk_size = 4096
         for i in range(0, len(piece_to_peers_json), chunk_size):
             conn.sendall(piece_to_peers_json[i:i + chunk_size].encode('utf-8'))
 
-        print(f"[SENT] Piece-to-peer mapping for file {file_name}")
+        print(f"[SENT] Piece-to-peer mapping for file {file_name} sent successfully.")
     except Exception as e:
-        print(f"[ERROR] Error sending piece info: {e}")
-        conn.sendall(b"ERROR|Failed to retrieve piece info")
+        # Handle errors and notify the peer
+        print(f"[ERROR] Error handling piece info request: {e}")
+        conn.sendall(b"ERROR|Failed to process piece info request")
     finally:
+        # Release the file lock
         file_lock.release()
         print(f"[UNLOCKED] File {file_name} is now available for other peers.")
 
