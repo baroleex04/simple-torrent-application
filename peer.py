@@ -1069,8 +1069,27 @@ def deregister_from_tracker(tracker_host, tracker_port, peer_id):
             s.sendall(f"DISCONNECT|{peer_id}".encode('utf-8'))
             response = s.recv(1024)
             print(response.decode('utf-8'))
+        remove_peer_list_file(peer_id)
     except Exception as e:
         print(f"Error while deregistering: {e}")
+
+def remove_peer_list_file(peer_id):
+    """
+    Remove the peer_list.json file when the program exits.
+    
+    Args:
+        peer_id (str): The peer ID to identify the folder.
+    """
+    folder_path = f"peer{peer_id}"
+    file_path = os.path.join(folder_path, "peer_list.json")
+    if os.path.exists(file_path):
+        try:
+            os.remove(file_path)
+            print(f"Successfully removed {file_path}")
+        except Exception as e:
+            print(f"[ERROR] Failed to remove {file_path}: {e}")
+    else:
+        print(f"[WARNING] {file_path} does not exist.")
 
 def request_peers_list(tracker_host, tracker_port, peer_id):
     """
@@ -1112,6 +1131,23 @@ def request_peers_list(tracker_host, tracker_port, peer_id):
 
             # Parse the JSON response
             peers = json.loads(received_data.decode('utf-8'))
+            # Prepare a simplified list with peer ID and file names
+            simplified_peer_list = []
+            for peer in peers:
+                peer_info = {
+                    "peer_id": peer["peer_id"],
+                    "files": [file_info["path"][-1] for file_info in peer["info_hash"]["files"]]  # Extract only the file names
+                }
+                simplified_peer_list.append(peer_info)
+
+            # Ensure the directory for the peer exists
+            folder_path = f"peer{peer_id}"
+            os.makedirs(folder_path, exist_ok=True)
+
+            # Write the simplified peer list to a JSON file in the folder
+            file_path = os.path.join(folder_path, "peer_list.json")
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(simplified_peer_list, f, ensure_ascii=False, indent=4)
             # Old
             # print(f"Received peer list: {peers}")
             # return peers
@@ -1409,14 +1445,11 @@ if __name__ == "__main__":
                         print(f"Error notifying tracker: {e}")
                 else:
                     print("No piece info available for download.")
- 
-            
             elif command == "EXIT":
                 print("Exiting...")
                 deregister_from_tracker(tracker_host, tracker_port, peer_id)
                 break
-            
-            request_peers_list(tracker_host, tracker_port, peer_id)
+            request_peers_list(tracker_host, tracker_port, peer_id)  
     except KeyboardInterrupt:
         deregister_from_tracker(tracker_host, tracker_port, peer_id)
     
