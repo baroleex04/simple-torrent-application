@@ -802,40 +802,6 @@ def peer_server(port, peer_id):
     except Exception as e:
         print(f"Error in peer server: {e}")
 
-def connect_to_peer(peer_host, peer_port, message):
-    """
-    Connect to another peer and send a message.
-
-    Args:
-        peer_host (str): IP address of the peer.
-        peer_port (int): Port number of the peer.
-        message (str): Message to send.
-
-    Raises:
-        Exception: If there are errors during connection or message delivery.
-    """
-    try:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((peer_host, peer_port))
-            s.sendall(message.encode('utf-8'))
-
-            if message.startswith("FILE_TRANSFER"):
-                _, filename = message.split('|')
-                if os.path.exists(filename):
-                    with open(filename, 'rb') as f:
-                        while chunk := f.read(1024):
-                            s.sendall(chunk)
-                    print(f"File {filename} sent successfully.")
-                else:
-                    print(f"File {filename} does not exist.")
-                    return
-                s.shutdown(socket.SHUT_WR)  # Indicate file transfer is done
-
-            response = s.recv(1024)
-            print(f"Response from peer: {response.decode('utf-8')}")
-    except Exception as e:
-        print(f"Error connecting to peer: {e}")
-
 def register_with_tracker(tracker_host, tracker_port, peer_id, peer_port, info_hash):
     """
     Register the peer with the tracker.
@@ -938,66 +904,6 @@ def request_peers_list(tracker_host, tracker_port, peer_id):
         print(f"[ERROR] Error while requesting peer list: {e}")
     return []
 
-def send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_size):
-    """
-    Send file pieces to another peer.
-
-    Args:
-        peer_host (str): IP address of the receiving peer.
-        peer_port (int): Port number of the receiving peer.
-        peer_id (str): ID of the current peer.
-        file_name (str): Name of the file being sent.
-        chunk_size (int): Size of each chunk in bytes.
-
-    Raises:
-        Exception: If there are errors during file piece transfer.
-    """
-    try:
-        file_path = f"peer{peer_id}/chunks"
-        # Define the torrent file path
-        file_info = f"peer{peer_id}/torrent.json"
-
-        # Ensure the file exists
-        if not os.path.exists(file_info):
-            print(f"Error: {file_info} not found.")
-            return None
-
-        # Load the current torrent.json content
-        with open(file_info, 'r') as file:
-            file_data = json.load(file)
-        for file_info in file_data["info"]["files"]:
-            if file_info["path"][-1] == file_name:  # Match the last part of the path
-                file_size = file_info["length"]
-        pieces = os.listdir(file_path)
-
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((peer_host, peer_port))
-            # Send metadata to the receiver
-            metadata_message = f"PIECE_TRANSFER|{file_name}|{file_size}|{chunk_size}|{len(pieces)}"
-            s.sendall(metadata_message.encode('utf-8'))
-
-            response = s.recv(1024).decode('utf-8')
-            if response != "READY":
-                print(f"Peer not ready for piece transfer: {response}")
-                return
-
-            for piece_name in pieces:
-                piece_path = os.path.join(file_path, piece_name)
-                with open(piece_path, 'rb') as piece_file:
-                    piece_data = piece_file.read()
-                    piece_hash = hashlib.sha1(piece_data).hexdigest()
-                    piece_message = f"PIECE|{piece_name}|{piece_hash}"
-                    s.sendall(piece_message.encode('utf-8'))
-                    time.sleep(0.1)  # Wait for receiver to prepare
-                    s.sendall(piece_data)
-                    response = s.recv(1024).decode('utf-8')
-                    if response != "RECEIVED":
-                        print(f"Error transferring piece {piece_name}: {response}")
-                        return
-            print("All pieces sent successfully.")
-    except Exception as e:
-        print(f"Error sending file pieces: {e}")
-
 def shutdown_gracefully(signal, frame):
     """
     Handle graceful shutdown of the peer server.
@@ -1090,19 +996,8 @@ if __name__ == "__main__":
     try:
         while True:
             # Listen for user commands
-            print("Enter a command (CONNECT <peer_host> <peer_port> or SEND <peer_host> <peer_port> <file_name> or UPLOAD <file_path> or EXIT):")
+            print("Enter a command (UPLOAD <file_path> or DOWNLOAD <filename> or EXIT):")
             command = input().strip()
-            
-            if command.startswith("CONNECT"):
-                _, peer_host, peer_port = command.split()
-                peer_port = int(peer_port)
-                message = f"Hello from peer {peer_id}!"
-                connect_to_peer(peer_host, peer_port, message)
-            
-            if command.startswith("SEND"):
-                _, peer_host, peer_port, file_name = command.split()
-                peer_port = int(peer_port)
-                send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_size)
             
             if command.startswith("UPLOAD"):
                 _, file_path = command.split()
