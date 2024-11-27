@@ -38,22 +38,6 @@ def save_tracker_data():
     with open('tracker1/tracker.json', 'w') as file:
         json.dump(tracker_data, file, indent=4)
         
-# def get_peers_excluding(peer_id):
-#     """
-#     Retrieve a list of all peers excluding the given peer ID.
-
-#     Args:
-#         peer_id (str): The peer ID to exclude from the returned list.
-
-#     Returns:
-#         list: A list of peers, each represented as a dictionary, excluding the given peer.
-#     """
-#     peers = []
-#     for peer in tracker_data:
-#         if peer["peer_id"] != peer_id:
-#             peers.append(peer)
-#     return peers
-
 def get_peers_excluding(peer_id):
     """
     Retrieve a list of all peers excluding the given peer ID.
@@ -145,6 +129,8 @@ def handle_register(conn, addr, data):
 #         file_lock.release()
 #         print(f"[UNLOCKED] File {file_name} is now available for other peers.")
 
+import time  # Import time module for sleep
+
 def handle_piece_info_request(conn, data):
     """
     Handle the PIECE_INFO_REQUEST command to return file piece mapping to peers.
@@ -164,6 +150,10 @@ def handle_piece_info_request(conn, data):
             print(f"[LOCKED] File {file_name} is currently being processed. Request denied.")
             conn.sendall(b"ERROR|File is currently locked for another download")
             return
+        
+        # Simulate a delay in processing the request
+        # print(f"[PROCESSING] Simulating processing delay for file {file_name}")
+        # time.sleep(10)  # Sleep for 10 seconds
 
         # Prepare the piece-to-peers mapping
         piece_to_peers = {}
@@ -180,14 +170,16 @@ def handle_piece_info_request(conn, data):
             for piece in peer["info_hash"].get("pieces", []):
                 if piece.get("file_name") == file_name:
                     piece_hash = piece["piece"]
+                    piece_index = piece["index"]  # Extract the index from the piece
+
                     if piece_hash not in piece_to_peers:
                         piece_to_peers[piece_hash] = []
+
                     piece_to_peers[piece_hash].append({
                         "ip": peer_ip,
-                        "port": peer_port
+                        "port": peer_port,
+                        "index": piece_index  # Include the index
                     })
-                else: 
-                    continue
 
         # Convert the mapping to JSON
         piece_to_peers_json = json.dumps(piece_to_peers)

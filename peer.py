@@ -81,7 +81,7 @@ def download_piece_from_peer(peer_host, peer_port, piece_hash, output_path, retr
             end_time = datetime.now()
             # print(f"[{end_time.strftime('%H:%M:%S.%f')}] Finished download of piece {piece_hash} from {peer_host}:{peer_port}")
             # print(f"Duration: {(end_time - start_time).total_seconds()} seconds")
-            # print(f"Downloaded piece {piece_hash} from {peer_host}:{peer_port}")
+            print(f"Downloaded piece {piece_hash} from {peer_host}:{peer_port}")
 
             # Validate the downloaded chunk
             with file_lock:
@@ -89,7 +89,7 @@ def download_piece_from_peer(peer_host, peer_port, piece_hash, output_path, retr
                     downloaded_data = output_file.read()
                     downloaded_hash = compute_chunk_hash_3(downloaded_data, chunk_index, file_name)
                     if downloaded_hash != piece_hash:
-                        print(f"Hash mismatch: expected {piece_hash}, got {downloaded_hash}")
+                        print(f"Hash mismatch for {chunk_index} and {file_name}: expected {piece_hash}, got {downloaded_hash}")
                         raise ValueError("Downloaded chunk hash does not match the expected hash.")
             
             if peer_id is not None and file_name is not None:
@@ -160,38 +160,140 @@ def update_torrent_with_chunks(peer_id, file_name=None):
     except Exception as e:
         print(f"Error updating torrent.json: {e}")
 
-# New
+# Old - sai het thi restore ve day
+# def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
+#     """
+#     Download multiple file pieces from peers concurrently.
+#     """
+#     chunk_folder = f"peer{peer_id}/chunks"
+#     os.makedirs(chunk_folder, exist_ok=True)
+
+#     threads = []
+#     piece_order = list(pieces_to_peers.keys())
+
+#     for chunk_index, (piece_hash, peers) in enumerate(pieces_to_peers.items()):
+#         if piece_hash in download_tracker:
+#             continue
+
+#         selected_peer = peers[chunk_index % len(peers)]
+#         peer_host = selected_peer["ip"]
+#         peer_port = selected_peer["port"]
+#         output_path = os.path.join(chunk_folder, f"{piece_hash}.chunk")
+
+#         thread = threading.Thread(
+#             target=download_piece_from_peer,
+#             args=(peer_host, peer_port, piece_hash, output_path, peers[1:], peer_id, file_name, chunk_index)
+#         )
+#         threads.append(thread)
+#         thread.start()
+
+#     for thread in threads:
+#         thread.join()
+
+#     print("All pieces downloaded. Combining...")
+#     combine_and_validate_pieces(chunk_folder, f"peer{peer_id}/received_files/{file_name}", piece_order)
+
+# New 2 - 0 work
+import random
+
 def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
     """
-    Download multiple file pieces from peers concurrently.
+    Download multiple file pieces from peers concurrently, distributing requests across peers.
     """
     chunk_folder = f"peer{peer_id}/chunks"
     os.makedirs(chunk_folder, exist_ok=True)
 
-    threads = []
-    piece_order = list(pieces_to_peers.keys())
+    threads = []  # To manage threads
+    download_tracker = set()  # Track completed downloads to avoid duplication
 
-    for chunk_index, (piece_hash, peers) in enumerate(pieces_to_peers.items()):
-        if piece_hash in download_tracker:
-            continue
-
-        selected_peer = peers[chunk_index % len(peers)]
-        peer_host = selected_peer["ip"]
-        peer_port = selected_peer["port"]
+    def download_piece(piece_hash, peer_info_list, piece_index):
+        """
+        Attempt to download a specific piece from a list of peers.
+        """
         output_path = os.path.join(chunk_folder, f"{piece_hash}.chunk")
+        
+        # Shuffle peer list to ensure random peer selection
+        random.shuffle(peer_info_list)
+
+        for peer_info in peer_info_list:
+            try:
+                peer_host = peer_info["ip"]
+                peer_port = int(peer_info["port"])
+                print(f"Attempting to download piece {piece_hash} from {peer_host}:{peer_port}...")
+                download_piece_from_peer(
+                    peer_host=peer_host,
+                    peer_port=peer_port,
+                    piece_hash=piece_hash,
+                    output_path=output_path,
+                    peer_id=peer_id,
+                    file_name=file_name,
+                    chunk_index=piece_index
+                )
+                # Mark as downloaded on success
+                with file_lock:
+                    download_tracker.add(piece_hash)
+                print(f"Successfully downloaded piece {piece_hash} from {peer_host}:{peer_port}")
+                return  # Exit loop on success
+            except Exception as e:
+                print(f"[ERROR] Failed to download piece {piece_hash} from {peer_host}:{peer_port} - {e}")
+        print(f"[ERROR] Could not download piece {piece_hash} from any peer.")
+
+    # Spawn threads for each piece
+    # for piece_index, (piece_hash, peer_list) in enumerate(pieces_to_peers.items()):
+    #     if piece_hash in download_tracker:
+    #         continue  # Skip already downloaded pieces
+
+    #     thread = threading.Thread(
+    #         target=download_piece,
+    #         args=(piece_hash, peer_list, piece_index),
+    #         daemon=True  # Daemonize threads to auto-cleanup
+    #     )
+    #     threads.append(thread)
+    #     thread.start()
+    
+    # Spawn threads for each piece
+    for piece_hash, peer_list in pieces_to_peers.items():
+        # Extract the correct index from the peers list (assumes all peers have the same index for this piece)
+        piece_index = peer_list[0]["index"]  # Use the first peer's index
+        
+        if piece_hash in download_tracker:
+            continue  # Skip already downloaded pieces
 
         thread = threading.Thread(
-            target=download_piece_from_peer,
-            args=(peer_host, peer_port, piece_hash, output_path, peers[1:], peer_id, file_name, chunk_index)
+            target=download_piece,
+            args=(piece_hash, peer_list, piece_index),
+            daemon=True  # Daemonize threads to auto-cleanup
         )
         threads.append(thread)
         thread.start()
 
+
+    # Wait for all threads to finish
     for thread in threads:
         thread.join()
 
+    # print("All pieces downloaded. Combining...\n")
+    
+    # combine_and_validate_pieces(
+    #     received_folder=chunk_folder,
+    #     output_file=f"peer{peer_id}/received_files/{file_name}",
+    #     piece_order=list(pieces_to_peers.keys())
+    # )
+    
     print("All pieces downloaded. Combining...")
-    combine_and_validate_pieces(chunk_folder, f"peer{peer_id}/received_files/{file_name}", piece_order)
+
+    # Sort piece_order by index extracted from the peer_list of each piece
+    piece_order = sorted(
+        pieces_to_peers.keys(),
+        key=lambda piece_hash: pieces_to_peers[piece_hash][0]["index"]
+    )
+
+    combine_and_validate_pieces(
+        received_folder=chunk_folder,
+        output_file=f"peer{peer_id}/received_files/{file_name}",
+        piece_order=piece_order
+    )
+
 
 def request_pieces_info(tracker_host, tracker_port, file_name):
     """
@@ -517,7 +619,6 @@ def update_torrent_transfer_pieces(peer_id, file_name, file_size, chunk_path, ch
         print(f"Error updating torrent.json from pieces: {e}")
         return None
 
-
 def split_file(file_path, chunk_size):
     """
     Split a file into smaller chunks.
@@ -621,7 +722,8 @@ def validate_chunk(chunk_data, chunk_index, file_name, expected_hash):
     """
     
     actual_hash = compute_chunk_hash_3(chunk_data, chunk_index, file_name)
-    print(f"DEBUG: {chunk_data}, {chunk_index}, {file_name}, {expected_hash} \n {actual_hash}")
+    # print(f"DEBUG: {chunk_data}, {chunk_index}, {file_name}, {expected_hash} \n {actual_hash}")
+    print(f"Validating chunk {chunk_index} in {file_name} and get {actual_hash == expected_hash}")
     
     return actual_hash == expected_hash
 
@@ -1244,53 +1346,6 @@ if __name__ == "__main__":
                 except Exception as e:
                     print(f"Error exporting pieces_to_peers mapping: {e}")
                 
-                # if pieces_to_peers:
-                #     download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size)
-                    
-                #     # Prepare updated `info_hash`
-                #     torrent_path = f'peer{peer_id}/torrent.json'
-                #     with open(torrent_path, 'r') as torrent_file:
-                #         torrent_data = json.load(torrent_file)
-
-                #     # Add `file_name`, `file_path`, and `index` to pieces
-                #     for piece_index, piece in enumerate(torrent_data["info"]["pieces"]):
-                #         piece["file_name"] = file_name
-                #         piece["file_path"] = f"peer{peer_id}"
-                #         piece["index"] = piece_index
-
-                #     # Save the updated torrent.json
-                #     with open(torrent_path, 'w') as torrent_file:
-                #         json.dump(torrent_data, torrent_file, indent=4)
-
-                #     # Notify the tracker with the updated `info_hash`
-                #     new_info_hash = torrent_data["info"]
-                    
-                #     try:
-                #         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                #             s.connect((tracker_host, tracker_port))
-                #             print(f"Notifying tracker about updated peer info for peer {peer_id}...")
-                            
-                #             # Serialize the `info_hash` into a JSON string
-                #             new_info_hash_str = json.dumps(new_info_hash)
-                #             info_hash_length = len(new_info_hash_str)
-                            
-                #             # Send the header with the length of the `info_hash`
-                #             header = f"UPDATE_PEER|{peer_id}|{info_hash_length}|".encode('utf-8')
-                #             s.sendall(header)
-                            
-                #             # Send the `info_hash` data in chunks
-                #             for i in range(0, info_hash_length, chunk_size):
-                #                 s.sendall(new_info_hash_str[i:i + chunk_size].encode('utf-8'))
-                            
-                #             # Wait for acknowledgment from the tracker
-                #             response = s.recv(1024).decode('utf-8')
-                #             print(f"Tracker response: {response}")
-                #     except Exception as e:
-                #         print(f"Error notifying tracker: {e}")
-                #     # End add for test
-                # else:
-                #     print("No piece info available for download.")
-                
                 if pieces_to_peers:
                     download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size)
                     
@@ -1303,7 +1358,8 @@ if __name__ == "__main__":
                     existing_pieces = {piece["piece"]: piece for piece in torrent_data["info"]["pieces"]}
 
                     # Add or update only new pieces
-                    for piece_index, piece_hash in enumerate(pieces_to_peers.keys()):
+                    for piece_hash, peer_list in pieces_to_peers.items():
+                        piece_index = peer_list[0]["index"]  # Get the correct index from the mapping
                         if piece_hash not in existing_pieces:
                             # Add new piece
                             torrent_data["info"]["pieces"].append({
