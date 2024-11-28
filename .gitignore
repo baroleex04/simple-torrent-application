@@ -1,0 +1,12 @@
+*.txt
+peer1/*
+peer2/*
+peer3/*
+peer4/*
+peer5/*
+peer6/*
+tracker1/*
+*.pdf
+*.mkv
+*.json
+.DS_Store
