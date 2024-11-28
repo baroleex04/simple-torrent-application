@@ -4,9 +4,13 @@ peer2/*
 peer3/*
 peer4/*
 peer5/*
+<<<<<<< HEAD
 peer6/*
 tracker1/*
 *.pdf
 *.mkv
 *.json
 .DS_Store
+=======
+peer6/*
+>>>>>>> origin/main

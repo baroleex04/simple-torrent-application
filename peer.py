@@ -448,7 +448,69 @@ def update_torrent_with_chunks(peer_id, file_name=None):
 
 def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
     """
-    Download multiple file pieces from peers concurrently, distributing requests across peers.
+    Downloads a file by concurrently retrieving its pieces from multiple peers and 
+    combines the pieces to reconstruct the file. 
+
+    Args:
+        peer_id (int): The ID of the peer executing the download.
+        file_name (str): The name of the file to download.
+        pieces_to_peers (dict): A mapping of piece hashes to a list of peer information.
+            Format: {piece_hash: [{"ip": str, "port": int, "index": int}, ...]}
+        chunk_size (int): The size of each file piece (chunk).
+
+    Procedure:
+    1. **Setup Directories**:
+        - Create a directory to store downloaded chunks specific to the peer (e.g., `peer{peer_id}/chunks`).
+
+    2. **Thread Initialization**:
+        - For each piece hash in `pieces_to_peers`, a separate thread is spawned to download the piece.
+        - Threads ensure that pieces are downloaded concurrently for faster execution.
+
+    3. **Piece Download Logic**:
+        - For each piece, attempt to download it from the list of available peers:
+            - The peers are shuffled to distribute load evenly across them.
+            - If a peer successfully provides the piece, it is saved to the chunk folder.
+            - The piece's status is updated in `piece_status` and marked as downloaded in `download_tracker`.
+        - If all peers fail to provide the piece, the piece is marked as failed in `piece_status`.
+
+    4. **Thread Management**:
+        - Wait for all threads to complete their execution.
+
+    5. **File Combination**:
+        - After all pieces are downloaded, they are combined in the correct order (based on their indices) to reconstruct the original file.
+        - The combined file is saved in `peer{peer_id}/received_files/{file_name}`.
+
+    Returns:
+        None. The function saves the reconstructed file to the disk.
+
+    Raises:
+        - Logs any exceptions during the download of individual pieces.
+        - Errors in piece combination or validation are logged but handled gracefully.
+
+    Detailed Behavior:
+    - `download_piece(piece_hash, peer_info_list, piece_index)`:
+        - Handles downloading a specific piece from the provided peer list.
+        - On success, marks the piece as completed and moves to the next piece.
+        - On failure from all peers, logs the error and updates the failure status.
+    
+    - `combine_and_validate_pieces()`:
+        - Combines downloaded chunks in the correct order and validates their integrity.
+        - Ensures the reconstructed file matches the expected original file.
+
+    Example:
+        ```
+        pieces_to_peers = {
+            "hash1": [{"ip": "192.168.1.10", "port": 5000, "index": 0}],
+            "hash2": [{"ip": "192.168.1.11", "port": 5001, "index": 1}],
+            ...
+        }
+        download_file_concurrently(peer_id=1, file_name="example.txt", pieces_to_peers=pieces_to_peers, chunk_size=1024)
+        ```
+
+    Key Attributes:
+    - Thread-Safe: Uses locks to ensure thread-safe updates to shared resources (`piece_status` and `download_tracker`).
+    - Resilient: Logs all failures without halting the overall download process.
+    - Concurrent: Maximizes download speed by parallelizing piece downloads.
     """
     chunk_folder = f"peer{peer_id}/chunks"
     os.makedirs(chunk_folder, exist_ok=True)
