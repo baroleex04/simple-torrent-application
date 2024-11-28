@@ -6,7 +6,36 @@ import time
 import threading
 import signal
 import hashlib
+import logging
 from datetime import datetime
+
+# Add logger initialization before any other code
+def setup_logger(peer_id):
+    """Initialize logger for the peer."""
+    logger = logging.getLogger(f'peer{peer_id}')
+    logger.setLevel(logging.INFO)
+    
+    # Create peer directory if it doesn't exist
+    os.makedirs(f"peer{peer_id}", exist_ok=True)
+    
+    # Create file handler
+    fh = logging.FileHandler(f'peer{peer_id}/peer{peer_id}.log')
+    fh.setLevel(logging.INFO)
+    
+    # Create console handler
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+    
+    # Add handlers to logger
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+    
+    return logger
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     s.connect(("8.8.8.8", 80))
@@ -67,6 +96,7 @@ def download_piece_from_peer(peer_host, peer_port, piece_hash, output_path, retr
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             start_time = datetime.now()
+            logger = logging.getLogger(f'peer{peer_id}')
             # print(f"[{start_time.strftime('%H:%M:%S.%f')}] Starting download of piece {piece_hash} from {peer_host}:{peer_port}")
             s.connect((peer_host, int(peer_port)))  # Ensure port is an integer
             request_message = f"REQUEST_PIECE|{piece_hash}"
@@ -81,7 +111,7 @@ def download_piece_from_peer(peer_host, peer_port, piece_hash, output_path, retr
             end_time = datetime.now()
             # print(f"[{end_time.strftime('%H:%M:%S.%f')}] Finished download of piece {piece_hash} from {peer_host}:{peer_port}")
             # print(f"Duration: {(end_time - start_time).total_seconds()} seconds")
-            print(f"Downloaded piece {piece_hash} from {peer_host}:{peer_port}")
+            logger.info(f"Downloaded piece {piece_hash} from {peer_host}:{peer_port}")
 
             # Validate the downloaded chunk
             with file_lock:
@@ -89,13 +119,13 @@ def download_piece_from_peer(peer_host, peer_port, piece_hash, output_path, retr
                     downloaded_data = output_file.read()
                     downloaded_hash = compute_chunk_hash_3(downloaded_data, chunk_index, file_name)
                     if downloaded_hash != piece_hash:
-                        print(f"Hash mismatch for {chunk_index} and {file_name}: expected {piece_hash}, got {downloaded_hash}")
+                        logger.error(f"Hash mismatch for {chunk_index} and {file_name}: expected {piece_hash}, got {downloaded_hash}")
                         raise ValueError("Downloaded chunk hash does not match the expected hash.")
             
             if peer_id is not None and file_name is not None:
                 update_torrent_with_chunks(peer_id, file_name)
     except Exception as e:
-        print(f"Error downloading piece: {e}")
+        logger.error(f"Error downloading piece: {e}")
 
 def update_torrent_with_chunks(peer_id, file_name=None):
     """
@@ -110,16 +140,17 @@ def update_torrent_with_chunks(peer_id, file_name=None):
         ValueError: If the torrent.json structure is invalid.
     """
     try:
+        logger = logging.getLogger(f'peer{peer_id}')
         torrent_path = f"peer{peer_id}/torrent.json"
         if not os.path.exists(torrent_path):
-            print(f"Torrent file not found: {torrent_path}")
+            logger.error(f"Torrent file not found: {torrent_path}")
             return
 
         chunks_path = f"peer{peer_id}/chunks"
         received_files_path = f"peer{peer_id}/received_files"
 
         if not os.path.exists(chunks_path):
-            print(f"Error: {chunks_path} not found.")
+            logger.error(f"Error: {chunks_path} not found.")
             return
 
         # Safely load and update the torrent.json file
@@ -129,7 +160,7 @@ def update_torrent_with_chunks(peer_id, file_name=None):
 
             # Ensure pieces structure exists
             if "info" not in torrent_data or "pieces" not in torrent_data["info"]:
-                print(f"Error: Invalid torrent.json structure in {torrent_path}.")
+                logger.error(f"Error: Invalid torrent.json structure in {torrent_path}.")
                 return
 
             existing_pieces = {piece["piece"] for piece in torrent_data["info"]["pieces"]}
@@ -155,10 +186,12 @@ def update_torrent_with_chunks(peer_id, file_name=None):
             # Save updated data
             with open(torrent_path, 'w') as torrent_file:
                 json.dump(torrent_data, torrent_file, indent=4)
+                logger.info(f"Torrent.json updated successfully for peer {peer_id}")
+
 
             # print(f"Torrent.json updated successfully for peer {peer_id}.")
     except Exception as e:
-        print(f"Error updating torrent.json: {e}")
+        logger.error(f"Error updating torrent.json: {e}")
 
 # Old - sai het thi restore ve day
 # def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
@@ -219,7 +252,7 @@ def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
             try:
                 peer_host = peer_info["ip"]
                 peer_port = int(peer_info["port"])
-                print(f"Attempting to download piece {piece_hash} from {peer_host}:{peer_port}...")
+                logger.info(f"Attempting to download piece {piece_hash} from {peer_host}:{peer_port}...")
                 download_piece_from_peer(
                     peer_host=peer_host,
                     peer_port=peer_port,
@@ -232,11 +265,11 @@ def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
                 # Mark as downloaded on success
                 with file_lock:
                     download_tracker.add(piece_hash)
-                print(f"Successfully downloaded piece {piece_hash} from {peer_host}:{peer_port}")
+                logger.info(f"Successfully downloaded piece {piece_hash} from {peer_host}:{peer_port}")
                 return  # Exit loop on success
             except Exception as e:
-                print(f"[ERROR] Failed to download piece {piece_hash} from {peer_host}:{peer_port} - {e}")
-        print(f"[ERROR] Could not download piece {piece_hash} from any peer.")
+                logger.error(f"Failed to download piece {piece_hash} from {peer_host}:{peer_port} - {e}")
+        logger.error(f"Could not download piece {piece_hash} from any peer.")
 
     # Spawn threads for each piece
     # for piece_index, (piece_hash, peer_list) in enumerate(pieces_to_peers.items()):
@@ -280,7 +313,7 @@ def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
     #     piece_order=list(pieces_to_peers.keys())
     # )
     
-    print("All pieces downloaded. Combining...")
+    logger.info("All pieces downloaded. Combining...")
 
     # Sort piece_order by index extracted from the peer_list of each piece
     piece_order = sorted(
@@ -293,6 +326,9 @@ def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
         output_file=f"peer{peer_id}/received_files/{file_name}",
         piece_order=piece_order
     )
+    
+    logger.info("Successfully combining all pieces.")
+
 
 
 def request_pieces_info(tracker_host, tracker_port, file_name):
@@ -334,33 +370,33 @@ def request_pieces_info(tracker_host, tracker_port, file_name):
             # Read the data length header
             header = s.recv(1024).decode('utf-8')
             if not header.startswith("DATA_LENGTH|"):
-                print("[ERROR] Invalid response header from tracker")
+                logger.error("Invalid response header from tracker")
                 return {}
             data_length = int(header.split('|')[1])
-            print(f"Expecting {data_length} bytes of piece info data")
+            logger.info(f"Expecting {data_length} bytes of piece info data")
 
             # Receive the full JSON data in chunks
             received_data = b""
             while len(received_data) < data_length:
                 chunk = s.recv(4096)
                 if not chunk:
-                    print("[ERROR] Connection closed before receiving all data")
+                    logger.error("Connection closed before receiving all data")
                     break
                 received_data += chunk
 
             # Parse the JSON response
             if len(received_data) == data_length:
                 pieces_to_peers = json.loads(received_data.decode('utf-8'))
-                print(f"Received pieces-to-peers mapping: {pieces_to_peers}")
+                logger.info(f"Received pieces-to-peers mapping: {pieces_to_peers}")
                 return pieces_to_peers
             else:
-                print("[ERROR] Received data size mismatch")
+                logger.error("Received data size mismatch")
                 return {}
     except json.JSONDecodeError as e:
-        print(f"[ERROR] JSON decoding error: {e}")
+        logger.error(f"JSON decoding error: {e}")
         return {}
     except Exception as e:
-        print(f"[ERROR] Error requesting piece info: {e}")
+        logger.error(f"Error requesting piece info: {e}")
         return {}
 
 def compute_info_hash(info):
@@ -392,11 +428,12 @@ def update_torrent_json(peer_id, file_path, chunk_size):
         Exception: If an error occurs during file processing or updating the torrent.json file.
     """
     try:
+        logger = logging.getLogger(f'peer{peer_id}')
         torrent_path = f"peer{peer_id}/torrent.json"
         chunks_folder = f"peer{peer_id}/chunks"
 
         if not os.path.exists(torrent_path):
-            print(f"Error: {torrent_path} not found.")
+            logger.error(f"{torrent_path} not found.")
             return None
 
         if not os.path.exists(chunks_folder):
@@ -448,14 +485,15 @@ def update_torrent_json(peer_id, file_path, chunk_size):
         # Save the updated torrent.json
         with open(torrent_path, 'w') as torrent_file:
             json.dump(torrent_data, torrent_file, indent=4)
+            logger.info(f"Updated torrent.json successfully for peer {peer_id}")
 
         # Compute new info_hash
         new_info_hash = compute_info_hash(torrent_data["info"])
-        print(f"Computed new info_hash: {new_info_hash}")
+        logger.info(f"Computed new info_hash: {new_info_hash}")
 
         return torrent_data["info"]
     except Exception as e:
-        print(f"Error updating torrent.json: {e}")
+        logger.error(f"Error updating torrent.json: {e}")
         return None
 
 # def update_torrent_transfer_pieces(peer_id, file_name, file_size, chunk_path, chunk_size):
@@ -562,10 +600,10 @@ def update_torrent_transfer_pieces(peer_id, file_name, file_size, chunk_path, ch
         torrent_path = f"peer{peer_id}/torrent.json"
 
         if not os.path.exists(torrent_path):
-            print(f"Error: {torrent_path} not found.")
+            logger.error(f"{torrent_path} not found.")
             return None
         if not os.path.isdir(chunk_path):
-            print(f"Error: Chunk path {chunk_path} is not a directory.")
+            logger.error(f"Chunk path {chunk_path} is not a directory.")
             return None
 
         with file_lock:
@@ -575,7 +613,7 @@ def update_torrent_transfer_pieces(peer_id, file_name, file_size, chunk_path, ch
 
             # Ensure the required structure exists in torrent.json
             if "info" not in torrent_data or "pieces" not in torrent_data["info"]:
-                print(f"Error: Invalid torrent.json structure in {torrent_path}.")
+                logger.error(f"Invalid torrent.json structure in {torrent_path}.")
                 return None
 
             # Track existing pieces and files to prevent duplication
@@ -590,7 +628,7 @@ def update_torrent_transfer_pieces(peer_id, file_name, file_size, chunk_path, ch
                     "length": file_size
                 }
                 torrent_data["info"]["files"].append(file_metadata)
-                print(f"Added file metadata: {file_metadata}")
+                logger.info(f"Added file metadata: {file_metadata}")
 
             # Process received chunks and update pieces
             for chunk_file in sorted(os.listdir(chunk_path)):  # Sort to ensure order
@@ -606,17 +644,17 @@ def update_torrent_transfer_pieces(peer_id, file_name, file_size, chunk_path, ch
                                 "file_path": f"peer{peer_id}",
                                 "index": len(existing_pieces)
                             })
-                            print(f"Added piece hash: {piece_hash}")
+                            logger.info(f"Added piece hash: {piece_hash}")
 
             # Save the updated torrent.json
             with open(torrent_path, 'w') as torrent_file:
                 json.dump(torrent_data, torrent_file, indent=4)
 
-            print(f"Updated torrent.json successfully for peer {peer_id}.")
+            logger.info(f"Updated torrent.json successfully for peer {peer_id}.")
             return torrent_data["info"]
 
     except Exception as e:
-        print(f"Error updating torrent.json from pieces: {e}")
+        logger.error(f"Error updating torrent.json from pieces: {e}")
         return None
 
 def split_file(file_path, chunk_size):
@@ -639,12 +677,12 @@ def split_file(file_path, chunk_size):
                 part_file_name = f"{part_num}_{file_name}"
                 with open(part_file_name, 'wb') as part_file:
                     part_file.write(chunk)
-                print(f"Created: {part_file_name}")
+                logger.info(f"Created: {part_file_name}")
                 part_num += 1
     except FileNotFoundError:
-        print("File not found. Please provide a valid file path.")
+        logger.error("File not found. Please provide a valid file path.")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}")
 
 def combine_files(part_files, output_file):
     """
@@ -663,12 +701,12 @@ def combine_files(part_files, output_file):
             for part_file in part_files:
                 with open(part_file, 'rb') as f:
                     output.write(f.read())
-                print(f"Added: {part_file}")
-        print(f"File combined into: {output_file}")
+                logger.info(f"Added: {part_file}")
+        logger.info(f"File combined into: {output_file}")
     except FileNotFoundError:
-        print("One or more part files not found. Please provide valid file paths.")
+        logger.error("One or more part files not found. Please provide valid file paths.")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}")
 
 def upload_file(peer_id, file_path, chunk_size=1024):
     """
@@ -706,7 +744,7 @@ def upload_file(peer_id, file_path, chunk_size=1024):
 
         # print(f"Piece order: {piece_order}")
     except Exception as e:
-        print(f"Error uploading file: {e}")
+        logger.error(f"Error uploading file: {e}")
         
 def validate_chunk(chunk_data, chunk_index, file_name, expected_hash):
     """
@@ -723,7 +761,7 @@ def validate_chunk(chunk_data, chunk_index, file_name, expected_hash):
     
     actual_hash = compute_chunk_hash_3(chunk_data, chunk_index, file_name)
     # print(f"DEBUG: {chunk_data}, {chunk_index}, {file_name}, {expected_hash} \n {actual_hash}")
-    print(f"Validating chunk {chunk_index} in {file_name} and get {actual_hash == expected_hash}")
+    logger.info(f"Validating chunk {chunk_index} in {file_name} and get {actual_hash == expected_hash}")
     
     return actual_hash == expected_hash
 
@@ -755,9 +793,9 @@ def combine_and_validate_pieces(received_folder, output_file, piece_order):
                                 continue
                             output.write(content)
                     else:
-                        print(f"Missing piece: {piece_hash}. File may be incomplete.")
+                        logger.info(f"Missing piece: {piece_hash}. File may be incomplete.")
 
-        print(f"File combined into {output_file} successfully.")
+        logger.info(f"File combined into {output_file} successfully.")
         
         # Update the torrent.json with the new file metadata
         peer_id = output_file.split('/')[0].replace("peer", "")  # Extract peer ID
@@ -766,7 +804,7 @@ def combine_and_validate_pieces(received_folder, output_file, piece_order):
 
         torrent_path = f"peer{peer_id}/torrent.json"
         if not os.path.exists(torrent_path):
-            print(f"Error: {torrent_path} not found.")
+            logger.error(f"Error: {torrent_path} not found.")
             return
 
         with open(torrent_path, 'r') as torrent_file:
@@ -779,14 +817,14 @@ def combine_and_validate_pieces(received_folder, output_file, piece_order):
         }
         if file_metadata not in torrent_data["info"]["files"]:
             torrent_data["info"]["files"].append(file_metadata)
-            print(f"Added file metadata to torrent.json: {file_metadata}")
+            logger.info(f"Added file metadata to torrent.json: {file_metadata}")
 
         # Save updated torrent.json
         with open(torrent_path, 'w') as torrent_file:
             json.dump(torrent_data, torrent_file, indent=4)
-            print(f"Updated torrent.json successfully for peer {peer_id}.")
+            logger.info(f"Updated torrent.json successfully for peer {peer_id}.")
     except Exception as e:
-        print(f"Error combining pieces: {e}")
+        logger.error(f"Error combining pieces: {e}")
 
 def notify_tracker_of_update(peer_id, file_name, chunk_size):
     """
@@ -803,17 +841,17 @@ def notify_tracker_of_update(peer_id, file_name, chunk_size):
         torrent_path = f"peer{peer_id}/torrent.json"
         chunks_path = f"peer{peer_id}/chunks"
         if not os.path.exists(torrent_path):
-            print(f"Error: Torrent file {torrent_path} not found.")
+            logger.error(f"Torrent file {torrent_path} not found.")
             return
         if not os.path.exists(chunks_path):
-            print(f"Error: Chunk path {chunks_path} not found.")
+            logger.error(f"Chunk path {chunks_path} not found.")
             return
         # Load the current torrent.json content
         with open(torrent_path, 'r') as torrent_file:
             torrent_data = json.load(torrent_file)
         # Ensure 'pieces' exists in the JSON structure
         if "info" not in torrent_data or "pieces" not in torrent_data["info"]:
-            print(f"Error: Invalid torrent.json structure in {torrent_path}.")
+            logger.error(f"Invalid torrent.json structure in {torrent_path}.")
             return
         # Read all chunks and compute their hashes
         updated_pieces = []
@@ -826,7 +864,7 @@ def notify_tracker_of_update(peer_id, file_name, chunk_size):
                     updated_pieces.append({"piece": piece_hash})
                     # print(f"Computed hash for chunk {chunk_file}: {piece_hash}")
             else:
-                print(f"Skipping non-file entry in chunks: {chunk_file}")
+                logger.info(f"Skipping non-file entry in chunks: {chunk_file}")
 
         # Update the pieces list in torrent.json
         torrent_data["info"]["pieces"] = updated_pieces
@@ -853,9 +891,9 @@ def notify_tracker_of_update(peer_id, file_name, chunk_size):
 
             # Wait for acknowledgment
             response = s.recv(1024).decode('utf-8')
-            print(f"Tracker response: {response}")
+            logger.info(f"Tracker response: {response}")
     except Exception as e:
-        print(f"Error notifying tracker: {e}")
+        logger.error(f"Error notifying tracker: {e}")
 
 def handle_peer_connection(conn, peer_id):
     """
@@ -879,14 +917,14 @@ def handle_peer_connection(conn, peer_id):
             os.makedirs(received_folder, exist_ok=True)
             file_path = os.path.join(received_folder, file_name)
             
-            print(f"Uploading file: {file_name} with chunk size {chunk_size}")
+            logger.info(f"Uploading file: {file_name} with chunk size {chunk_size}")
             with open(file_path, 'wb') as f:
                 while True:
                     chunk = conn.recv(1024)
                     if not chunk:
                         break
                     f.write(chunk)
-            print(f"File {file_name} was uploaded at {file_path}")
+            logger.info(f"File {file_name} was uploaded at {file_path}")
             
             # Split the file into chunks for storage
             upload_file(peer_id, file_path, chunk_size)
@@ -923,7 +961,7 @@ def handle_peer_connection(conn, peer_id):
                 notify_tracker_of_update(peer_id, file_name, chunk_size)
 
             # Combine pieces and validate
-            print(f"All pieces of {file_name} received successfully. Validating...")
+            logger.info(f"All pieces of {file_name} received successfully. Validating...")
             combine_and_validate_pieces(received_folder, f"peer{peer_id}/received_files/{file_name}")
             conn.sendall("TRANSFER_COMPLETE".encode('utf-8'))
         
@@ -934,14 +972,14 @@ def handle_peer_connection(conn, peer_id):
                 with open(piece_path, 'rb') as piece_file:
                     piece_data = piece_file.read()
                     conn.sendall(piece_data)
-                print(f"Sent piece {piece_hash} to peer.")
+                logger.info(f"Sent piece {piece_hash} to peer.")
             else:
                 conn.sendall("PIECE_NOT_FOUND".encode('utf-8'))
         else:
-            print(f"Unknown message received: {data}")
+            logger.error(f"Unknown message received: {data}")
             conn.sendall("Invalid request".encode('utf-8'))
     except Exception as e:
-        print(f"Error handling peer connection: {e}")
+        logger.error(f"Error handling peer connection: {e}")
     finally:
         conn.close()
 
@@ -955,14 +993,14 @@ def start_upload_server(peer_id, upload_port):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as upload_socket:
             upload_socket.bind(('0.0.0.0', upload_port))
             upload_socket.listen()
-            print(f"Upload server running for peer {peer_id} on port {upload_port}")
+            logger.info(f"Upload server running for peer {peer_id} on port {upload_port}")
 
             while True:
                 conn, addr = upload_socket.accept()
                 thread = threading.Thread(target=handle_peer_connection, args=(conn, peer_id), daemon=True)
                 thread.start()
     except Exception as e:
-        print(f"[ERROR] Upload server error for peer {peer_id}: {e}")
+        logger.error(f"Upload server error for peer {peer_id}: {e}")
 
 def peer_server(port, peer_id):
     """
@@ -980,13 +1018,14 @@ def peer_server(port, peer_id):
             host = '0.0.0.0'  # Listening from all hosts
             server_socket.bind((host, port))
             server_socket.listen()
-            print(f"Peer server listening on port {port}")
+            logger.info(f"Peer server listening on port {port}")
             while True:
                 conn, addr = server_socket.accept()
                 print(f"Connection received from {addr}")
+                logger.info(f"Connection received from {addr}")
                 threading.Thread(target=handle_peer_connection, args=(conn,peer_id)).start()
     except Exception as e:
-        print(f"Error in peer server: {e}")
+        logger.error(f"Error in peer server: {e}")
 
 def connect_to_peer(peer_host, peer_port, message):
     """
@@ -1011,16 +1050,16 @@ def connect_to_peer(peer_host, peer_port, message):
                     with open(filename, 'rb') as f:
                         while chunk := f.read(1024):
                             s.sendall(chunk)
-                    print(f"File {filename} sent successfully.")
+                    logger.info(f"File {filename} sent successfully.")
                 else:
-                    print(f"File {filename} does not exist.")
+                    logger.info(f"File {filename} does not exist.")
                     return
                 s.shutdown(socket.SHUT_WR)  # Indicate file transfer is done
 
             response = s.recv(1024)
-            print(f"Response from peer: {response.decode('utf-8')}")
+            logger.info(f"Response from peer: {response.decode('utf-8')}")
     except Exception as e:
-        print(f"Error connecting to peer: {e}")
+        logger.error(f"Error connecting to peer: {e}")
 
 def register_with_tracker(tracker_host, tracker_port, peer_id, peer_port, info_hash):
     """
@@ -1044,11 +1083,11 @@ def register_with_tracker(tracker_host, tracker_port, peer_id, peer_port, info_h
             s.connect((tracker_host, tracker_port))
             s.sendall(f"REGISTER|{peer_id}|{peer_port}|{info_hash}".encode('utf-8'))
             response = s.recv(1024).decode('utf-8')
-            print(response)
+            logger.info(response)
             _, peer_host = response.split('|')
             return peer_host
     except Exception as e:
-        print(f"Error registering with tracker: {e}")
+        logger.error(f"Error registering with tracker: {e}")
         return
 
 def deregister_from_tracker(tracker_host, tracker_port, peer_id):
@@ -1068,10 +1107,10 @@ def deregister_from_tracker(tracker_host, tracker_port, peer_id):
             s.connect((tracker_host, tracker_port))
             s.sendall(f"DISCONNECT|{peer_id}".encode('utf-8'))
             response = s.recv(1024)
-            print(response.decode('utf-8'))
+            logger.info(response.decode('utf-8'))
         remove_peer_list_file(peer_id)
     except Exception as e:
-        print(f"Error while deregistering: {e}")
+        logger.error(f"Error while deregistering: {e}")
 
 def remove_peer_list_file(peer_id):
     """
@@ -1082,14 +1121,14 @@ def remove_peer_list_file(peer_id):
     """
     folder_path = f"peer{peer_id}"
     file_path = os.path.join(folder_path, "peer_list.json")
-    if os.path.exists(file_path):
+    if (os.path.exists(file_path)):
         try:
             os.remove(file_path)
-            print(f"Successfully removed {file_path}")
+            logger.info(f"Successfully removed {file_path}")
         except Exception as e:
-            print(f"[ERROR] Failed to remove {file_path}: {e}")
+            logger.error(f"Failed to remove {file_path}: {e}")
     else:
-        print(f"[WARNING] {file_path} does not exist.")
+        logger.warning(f"{file_path} does not exist.")
 
 def request_peers_list(tracker_host, tracker_port, peer_id):
     """
@@ -1111,22 +1150,22 @@ def request_peers_list(tracker_host, tracker_port, peer_id):
             # Receive the data length first
             header = s.recv(1024).decode('utf-8')
             if not header.startswith("DATA_LENGTH|"):
-                print("[ERROR] Invalid response header from tracker")
+                logger.error("Invalid response header from tracker")
                 return []
             data_length = int(header.split('|')[1])
-            print(f"Expecting {data_length} bytes of peer list data")
+            logger.info(f"Expecting {data_length} bytes of peer list data")
 
             # Receive the full data in chunks
             received_data = b""
             while len(received_data) < data_length:
                 chunk = s.recv(4096)
                 if not chunk:  # Connection closed prematurely
-                    print("[ERROR] Connection closed before receiving all data")
+                    logger.error("Connection closed before receiving all data")
                     break
                 received_data += chunk
 
             if len(received_data) != data_length:
-                print("[ERROR] Received data size mismatch")
+                logger.error("Received data size mismatch")
                 return []
 
             # Parse the JSON response
@@ -1148,16 +1187,18 @@ def request_peers_list(tracker_host, tracker_port, peer_id):
             file_path = os.path.join(folder_path, "peer_list.json")
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(simplified_peer_list, f, ensure_ascii=False, indent=4)
+            
+            logger.info(f"Peer list saved to {file_path}")
             # Old
             # print(f"Received peer list: {peers}")
             # return peers
             # New
             return "Receiving peer list here"
     except json.JSONDecodeError as e:
-        print(f"[ERROR] JSON decoding error: {e}")
-        print(f"Partial data received: {received_data.decode('utf-8')}")
+        logger.error(f"JSON decoding error: {e}")
+        logger.error(f"Partial data received: {received_data.decode('utf-8')}")
     except Exception as e:
-        print(f"[ERROR] Error while requesting peer list: {e}")
+        logger.error(f"Error while requesting peer list: {e}")
     return []
 
 def send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_size):
@@ -1181,7 +1222,7 @@ def send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_siz
 
         # Ensure the file exists
         if not os.path.exists(file_info):
-            print(f"Error: {file_info} not found.")
+            logger.error(f"{file_info} not found.")
             return None
 
         # Load the current torrent.json content
@@ -1200,7 +1241,7 @@ def send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_siz
 
             response = s.recv(1024).decode('utf-8')
             if response != "READY":
-                print(f"Peer not ready for piece transfer: {response}")
+                logger.error(f"Peer not ready for piece transfer: {response}")
                 return
 
             for piece_name in pieces:
@@ -1214,11 +1255,11 @@ def send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_siz
                     s.sendall(piece_data)
                     response = s.recv(1024).decode('utf-8')
                     if response != "RECEIVED":
-                        print(f"Error transferring piece {piece_name}: {response}")
+                        logger.error(f"Error transferring piece {piece_name}: {response}")
                         return
-            print("All pieces sent successfully.")
+            logger.info("All pieces sent successfully.")
     except Exception as e:
-        print(f"Error sending file pieces: {e}")
+        logger.error(f"Error sending file pieces: {e}")
 
 def shutdown_gracefully(signal, frame):
     """
@@ -1232,6 +1273,7 @@ def shutdown_gracefully(signal, frame):
         SystemExit: To exit the program cleanly.
     """
     print("\n[INFO] Shutting down the peer server...")
+    logger.info("Shutting down the peer server...")
     sys.exit(0)
 
 def initialize_peer_directory(peer_id, piece_length):
@@ -1271,10 +1313,13 @@ def initialize_peer_directory(peer_id, piece_length):
                 json.dump(torrent_data, torrent_file, indent=4)
 
             print(f"Initialized {torrent_file_path} for peer {peer_id}")
+            logger.info(f"Initialized {torrent_file_path} for peer {peer_id}")
         else:
             print(f"{torrent_file_path} already exists for peer {peer_id}")
+            logger.info(f"{torrent_file_path} already exists for peer {peer_id}")
     except Exception as e:
         print(f"Error initializing peer directory: {e}")
+        logger.error(f"Error initializing peer directory: {e}")
         
 # NEW 1
 # Main script logic
@@ -1284,6 +1329,9 @@ if __name__ == "__main__":
     peer_port = int(sys.argv[2])
     piece_length = 256  # Define the piece length (e.g., 5 bytes)
 
+    # Initialize logger
+    logger = setup_logger(peer_id)
+    
     # Initialize the peer directory and torrent.json
     initialize_peer_directory(peer_id=peer_id, piece_length=piece_length)
     
@@ -1312,23 +1360,24 @@ if __name__ == "__main__":
     try:
         while True:
             # Listen for user commands
-            print("Enter a command (CONNECT <peer_host> <peer_port> or SEND <peer_host> <peer_port> <file_name> or UPLOAD <file_path> or EXIT):")
+            print("Enter a command (DOWNLOAD <file_path> or UPLOAD <file_path> or [ENTER] (to get peer list) or EXIT):")
             command = input().strip()
             
-            if command.startswith("CONNECT"):
-                _, peer_host, peer_port = command.split()
-                peer_port = int(peer_port)
-                message = f"Hello from peer {peer_id}!"
-                connect_to_peer(peer_host, peer_port, message)
+            # if command.startswith("CONNECT"):
+            #     _, peer_host, peer_port = command.split()
+            #     peer_port = int(peer_port)
+            #     message = f"Hello from peer {peer_id}!"
+            #     connect_to_peer(peer_host, peer_port, message)
             
-            if command.startswith("SEND"):
-                _, peer_host, peer_port, file_name = command.split()
-                peer_port = int(peer_port)
-                send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_size)
+            # if command.startswith("SEND"):
+            #     _, peer_host, peer_port, file_name = command.split()
+            #     peer_port = int(peer_port)
+            #     send_file_pieces_to_peer(peer_host, peer_port, peer_id, file_name, chunk_size)
             
             if command.startswith("UPLOAD"):
                 _, file_path = command.split()
                 if os.path.exists(file_path):
+                    logger.info(f"Uploading file: {file_path}...")
                     print(f"Uploading file: {file_path}...")
 
                     # Use the upload_file function to split and store locally
@@ -1340,6 +1389,7 @@ if __name__ == "__main__":
                         try:
                             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                 s.connect((tracker_host, tracker_port))
+                                logger.info(f"Notifying tracker about upload for peer {peer_id}...")
                                 print(f"Notifying tracker about upload for peer {peer_id}...")
 
                                 # Serialize the new_info_hash as a string
@@ -1357,10 +1407,13 @@ if __name__ == "__main__":
 
                                 # Receive acknowledgment from the tracker
                                 response = s.recv(1024).decode('utf-8')
+                                logger.info(f"Tracker response: {response}")
                                 print(f"Tracker response: {response}")
                         except Exception as e:
+                            logger.error(f"Error notifying tracker: {e}")
                             print(f"Error notifying tracker: {e}")
                     else:
+                        logger.error(f"Error: File {file_path} does not exist.")
                         print(f"Error: File {file_path} does not exist.")
 
             if command.startswith("DOWNLOAD"):
@@ -1378,8 +1431,10 @@ if __name__ == "__main__":
                 try:
                     with open(export_file_path, 'w') as export_file:
                         json.dump(pieces_to_peers, export_file, indent=4)
+                    logger.info(f"Exported pieces_to_peers mapping to {export_file_path}")
                     print(f"Exported pieces_to_peers mapping to {export_file_path}")
                 except Exception as e:
+                    logger.error(f"Error exporting pieces_to_peers mapping: {e}")
                     print(f"Error exporting pieces_to_peers mapping: {e}")
                 
                 if pieces_to_peers:
@@ -1418,13 +1473,15 @@ if __name__ == "__main__":
                     with open(torrent_path, 'w') as torrent_file:
                         json.dump(torrent_data, torrent_file, indent=4)
 
+                    logger.info(f"Updated torrent.json successfully for peer {peer_id}.")
+
                     # Notify the tracker with the updated `info_hash`
                     new_info_hash = torrent_data["info"]
                     
                     try:
                         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             s.connect((tracker_host, tracker_port))
-                            print(f"Notifying tracker about updated peer info for peer {peer_id}...")
+                            logger.info(f"Notifying tracker about updated peer info for peer {peer_id}...")
                             
                             # Serialize the `info_hash` into a JSON string
                             new_info_hash_str = json.dumps(new_info_hash)
@@ -1440,17 +1497,18 @@ if __name__ == "__main__":
                             
                             # Wait for acknowledgment from the tracker
                             response = s.recv(1024).decode('utf-8')
-                            print(f"Tracker response: {response}")
+                            logger.info(f"Tracker response: {response}")
                     except Exception as e:
-                        print(f"Error notifying tracker: {e}")
+                        logger.error(f"Error notifying tracker: {e}")
                 else:
-                    print("No piece info available for download.")
+                    logger.error("No piece info available for download.")
             elif command == "EXIT":
-                print("Exiting...")
+                logger.info("Exiting...")
                 deregister_from_tracker(tracker_host, tracker_port, peer_id)
                 break
             request_peers_list(tracker_host, tracker_port, peer_id)  
     except KeyboardInterrupt:
+        logger.info("Received keyboard interrupt, shutting down...")
         deregister_from_tracker(tracker_host, tracker_port, peer_id)
-    
-     
+
+

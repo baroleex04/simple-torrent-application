@@ -1,3 +1,39 @@
+import socket
+import threading
+import json
+import signal
+import sys
+import logging
+import os
+
+# Add logger initialization
+def setup_logger():
+    """Initialize logger for the tracker."""
+    logger = logging.getLogger('tracker')
+    logger.setLevel(logging.INFO)
+    
+    # Create tracker directory if it doesn't exist
+    os.makedirs("tracker1", exist_ok=True)
+    
+    # Create file handler
+    fh = logging.FileHandler('tracker1/tracker.log')
+    fh.setLevel(logging.INFO)
+    
+    # Create console handler
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    
+    # Create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+    
+    # Add handlers to logger
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+    
+    return logger
+
 # tracker create a server
 # peer connect to tracker and tracker write down a record of peer
 import socket
@@ -53,7 +89,7 @@ def handle_register(conn, addr, data):
     """
     try:
         _, peer_id, peer_port, info_hash = data.split('|')
-        print(f"[REGISTER] Peer {peer_id} connected.")
+        logger.info(f"[REGISTER] Peer {peer_id} connected.")
         peer_ip = addr[0]
         info_hash_object = json.loads(info_hash)
 
@@ -75,59 +111,12 @@ def handle_register(conn, addr, data):
                 tracker_data.append(new_peer)
                 save_tracker_data()
                 conn.sendall(f"REGISTERED|{peer_ip}".encode('utf-8'))
-                print(f"[REGISTERED] Peer {peer_id} successfully registered.")
+                logger.info(f"[REGISTERED] Peer {peer_id} successfully registered.")
             else:
                 conn.sendall(b"EXISTED PEER ID, CAN NOT REGISTERED")
     except Exception as e:
-        print(f"[ERROR] Registering peer failed: {e}")
+        logger.error(f"[ERROR] Registering peer failed: {e}")
         conn.sendall(b"ERROR|Registering failed")
-
-# def handle_piece_info_request(conn, data):
-#     """
-#     Handle the PIECE_INFO_REQUEST command to return file piece mapping to peers.
-#     Uses file locks to prevent multiple simultaneous requests for the same file.
-#     """
-#     _, file_name = data.split("|")
-#     print(f"[PIECE INFO REQUEST] File requested: {file_name}")
-
-#     # Get the lock for the requested file
-#     file_lock = get_file_lock(file_name)
-
-#     try:
-#         if not file_lock.acquire(blocking=False):
-#             print(f"[LOCKED] File {file_name} is currently being downloaded. Request denied.")
-#             conn.sendall(b"ERROR|File is currently locked for another download")
-#             return
-
-#         # Process the request
-#         piece_to_peers = {}
-#         for peer in tracker_data:
-#             peer_ip = peer["ip"]
-#             peer_port = peer["port"]
-#             files = peer["info_hash"].get("files", [])
-#             for file in files:
-#                 if file_name in file["path"]:
-#                     pieces = peer["info_hash"].get("pieces", [])
-#                     for piece in pieces:
-#                         piece_hash = piece["piece"]
-#                         if piece_hash not in piece_to_peers:
-#                             piece_to_peers[piece_hash] = []
-#                         piece_to_peers[piece_hash].append({"ip": peer_ip, "port": peer_port})
-
-#         piece_to_peers_json = json.dumps(piece_to_peers)
-#         conn.sendall(f"DATA_LENGTH|{len(piece_to_peers_json)}".encode('utf-8'))
-
-#         chunk_size = 4096
-#         for i in range(0, len(piece_to_peers_json), chunk_size):
-#             conn.sendall(piece_to_peers_json[i:i + chunk_size].encode('utf-8'))
-
-#         print(f"[SENT] Piece-to-peer mapping for file {file_name}")
-#     except Exception as e:
-#         print(f"[ERROR] Error sending piece info: {e}")
-#         conn.sendall(b"ERROR|Failed to retrieve piece info")
-#     finally:
-#         file_lock.release()
-#         print(f"[UNLOCKED] File {file_name} is now available for other peers.")
 
 import time  # Import time module for sleep
 
@@ -140,14 +129,14 @@ def handle_piece_info_request(conn, data):
     try:
         # Extract the file name from the request
         _, file_name = data.split("|")
-        print(f"[PIECE INFO REQUEST] File requested: {file_name}")
+        logger.info(f"[PIECE INFO REQUEST] File requested: {file_name}")
 
         # Get a lock for the requested file
         file_lock = get_file_lock(file_name)
 
         if not file_lock.acquire(blocking=False):
             # If the file is locked, notify the peer
-            print(f"[LOCKED] File {file_name} is currently being processed. Request denied.")
+            logger.warning(f"[LOCKED] File {file_name} is currently being processed. Request denied.")
             conn.sendall(b"ERROR|File is currently locked for another download")
             return
         
@@ -190,15 +179,15 @@ def handle_piece_info_request(conn, data):
         for i in range(0, len(piece_to_peers_json), chunk_size):
             conn.sendall(piece_to_peers_json[i:i + chunk_size].encode('utf-8'))
 
-        print(f"[SENT] Piece-to-peer mapping for file {file_name} sent successfully.")
+        logger.info(f"[SENT] Piece-to-peer mapping for file {file_name} sent successfully.")
     except Exception as e:
         # Handle errors and notify the peer
-        print(f"[ERROR] Error handling piece info request: {e}")
+        logger.error(f"[ERROR] Error handling piece info request: {e}")
         conn.sendall(b"ERROR|Failed to process piece info request")
     finally:
         # Release the file lock
         file_lock.release()
-        print(f"[UNLOCKED] File {file_name} is now available for other peers.")
+        logger.info(f"[UNLOCKED] File {file_name} is now available for other peers.")
 
 def handle_update_peer(conn, data):
     """
@@ -206,13 +195,13 @@ def handle_update_peer(conn, data):
     """
     peer_id = None  # Initialize to avoid unbound local variable issues
     try:
-        print("[DEBUG] Updating peer")
+        logger.info("[DEBUG] Updating peer")
         # print(f"Raw data received: {data}")
         
         # Split the header and validate parts
         parts = data.split('|', maxsplit=3)  # Limit to 3 splits to handle the JSON separately
         if len(parts) < 4:
-            print("[ERROR] Malformed UPDATE_PEER command")
+            logger.error("[ERROR] Malformed UPDATE_PEER command")
             conn.sendall(b"ERROR|Malformed UPDATE_PEER command")
             return
         
@@ -223,14 +212,14 @@ def handle_update_peer(conn, data):
         while len(received_data) < info_hash_length:
             chunk = conn.recv(4096)
             if not chunk:
-                print("[ERROR] Connection closed prematurely while receiving metadata")
+                logger.error("[ERROR] Connection closed prematurely while receiving metadata")
                 conn.sendall(b"ERROR|Incomplete metadata received")
                 return
             received_data += chunk
 
         # Validate the received metadata length
         if len(received_data) != info_hash_length:
-            print("[ERROR] Received metadata length does not match the expected size")
+            logger.error("[ERROR] Received metadata length does not match the expected size")
             conn.sendall(b"ERROR|Metadata length mismatch")
             return
 
@@ -238,7 +227,7 @@ def handle_update_peer(conn, data):
         try:
             info_hash_object = json.loads(received_data.decode('utf-8'))
         except json.JSONDecodeError as e:
-            print(f"[ERROR] Invalid JSON received from peer {peer_id}: {e}")
+            logger.error(f"[ERROR] Invalid JSON received from peer {peer_id}: {e}")
             conn.sendall(b"ERROR|Invalid JSON format")
             return
 
@@ -249,11 +238,11 @@ def handle_update_peer(conn, data):
                 peer_to_update["info_hash"] = info_hash_object
                 save_tracker_data()
                 conn.sendall(f"UPDATED|{peer_id}".encode('utf-8'))
-                print(f"[UPDATED] Peer {peer_id} info successfully updated.")
+                logger.info(f"[UPDATED] Peer {peer_id} info successfully updated.")
             else:
                 conn.sendall(b"ERROR|Peer not found")
     except Exception as e:
-        print(f"[ERROR] Updating peer info failed: {e}")
+        logger.error(f"[ERROR] Updating peer info failed: {e}")
         conn.sendall(b"ERROR|Failed to update peer")
 
 def handle_disconnect(conn, data):
@@ -262,7 +251,7 @@ def handle_disconnect(conn, data):
     """
     try:
         _, peer_id = data.split('|')
-        print(f"[DISCONNECT] Peer {peer_id} requested to disconnect.")
+        logger.info(f"[DISCONNECT] Peer {peer_id} requested to disconnect.")
 
         # Use a lock to ensure thread-safe modification of tracker_data
         lock = threading.Lock()
@@ -270,7 +259,7 @@ def handle_disconnect(conn, data):
             peer_to_remove = next((obj for obj in tracker_data if obj["peer_id"] == peer_id), None)
 
             if not peer_to_remove:
-                print(f"[ERROR] Peer {peer_id} not found in tracker data.")
+                logger.error(f"[ERROR] Peer {peer_id} not found in tracker data.")
                 conn.sendall(b"ERROR|Peer ID not found")
                 return
 
@@ -278,9 +267,9 @@ def handle_disconnect(conn, data):
             tracker_data.remove(peer_to_remove)
             save_tracker_data()
             conn.sendall(b"DISCONNECTED SUCCESSFULLY")
-            print(f"[INFO] Peer {peer_id} successfully disconnected.")
+            logger.info(f"[INFO] Peer {peer_id} successfully disconnected.")
     except Exception as e:
-        print(f"[ERROR] Handling disconnect failed: {e}")
+        logger.error(f"[ERROR] Handling disconnect failed: {e}")
         conn.sendall(b"ERROR|Failed to disconnect peer")
 
 def handle_list_request(conn, data):
@@ -289,7 +278,7 @@ def handle_list_request(conn, data):
     """
     try:
         _, peer_id = data.split('|')
-        print(f"[LISTREQUEST] Peer {peer_id} requested the peer list.")
+        logger.info(f"[LISTREQUEST] Peer {peer_id} requested the peer list.")
 
         # Use a lock to ensure thread-safe read access to tracker_data
         lock = threading.Lock()
@@ -305,9 +294,9 @@ def handle_list_request(conn, data):
         for i in range(0, len(peer_list_json), chunk_size):
             conn.sendall(peer_list_json[i:i + chunk_size].encode('utf-8'))
 
-        print(f"[INFO] Sent peer list to peer {peer_id}")
+        logger.info(f"[INFO] Sent peer list to peer {peer_id}")
     except Exception as e:
-        print(f"[ERROR] Handling list request failed: {e}")
+        logger.error(f"[ERROR] Handling list request failed: {e}")
         conn.sendall(b"ERROR|Failed to retrieve peer list")
 
 # New 2
@@ -333,15 +322,15 @@ def handle_client(conn, addr):
                 handle_update_peer(conn, data)
             elif data.startswith("DISCONNECT"):
                 handle_disconnect(conn, data)
-                print(f"[INFO] Client {addr} disconnected gracefully")
+                logger.info(f"[INFO] Client {addr} disconnected gracefully")
                 break  # Exit loop after handling DISCONNECT
             elif data.startswith("LISTREQUEST"):
                 handle_list_request(conn, data)
             else:
-                print(f"[ERROR] Unknown command from {addr}: {data}")
+                logger.error(f"[ERROR] Unknown command from {addr}: {data}")
                 conn.sendall(b"ERROR|Unknown command")
     except Exception as e:
-        print(f"[ERROR] Exception occurred with client {addr}: {e}")
+        logger.error(f"[ERROR] Exception occurred with client {addr}: {e}")
     finally:
         # print(f"[INFO] Closing connection with {addr}")
         conn.close()
@@ -365,10 +354,10 @@ def start_tracker(host='0.0.0.0', port=4000):
     try:
         server.bind((host, port))
         # print(socket.gethostbyname_ex(socket.gethostname())[-1][1])
-        print(f"Tracker running on {host}:{port}")
+        logger.info(f"Tracker running on {host}:{port}")
     except OSError as e:
-        print(f"[ERROR] {e}. The port {port} might be already in use.")
-        print("Please make sure no other process is using this port.")
+        logger.error(f"[ERROR] {e}. The port {port} might be already in use.")
+        logger.error("Please make sure no other process is using this port.")
         return
     
     server.listen()
@@ -383,7 +372,7 @@ def start_tracker(host='0.0.0.0', port=4000):
             signal (int): The signal number received.
             frame: The current stack frame.
         """
-        print("\n[INFO] Shutting down the tracker...")
+        logger.info("\n[INFO] Shutting down the tracker...")
         for thread in threads:
             thread.join()  # Ensure all threads finish
         server.close()
@@ -400,6 +389,9 @@ def start_tracker(host='0.0.0.0', port=4000):
 
 
 if __name__ == "__main__":
+    # Initialize logger
+    logger = setup_logger()
+    
     # peer_1_infor = next((obj for obj in tracker_data if obj["peer_id"] == "2"), None) # find obj with peer_id = 2
     # print(tracker_data)
     start_tracker()
