@@ -1,0 +1,756 @@
+<<<<<<< HEAD
+2024-11-28 13:04:12,990 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 13:04:20,944 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 13:04:20,947 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 13:04:22,873 - tracker - INFO - [REGISTER] Peer 2 connected.
+2024-11-28 13:04:22,903 - tracker - INFO - [REGISTERED] Peer 2 successfully registered.
+2024-11-28 13:04:24,149 - tracker - INFO - [REGISTER] Peer 3 connected.
+2024-11-28 13:04:24,155 - tracker - INFO - [REGISTERED] Peer 3 successfully registered.
+2024-11-28 13:04:25,944 - tracker - INFO - [REGISTER] Peer 4 connected.
+2024-11-28 13:04:25,949 - tracker - INFO - [REGISTERED] Peer 4 successfully registered.
+2024-11-28 13:04:27,947 - tracker - INFO - [REGISTER] Peer 5 connected.
+2024-11-28 13:04:27,952 - tracker - INFO - [REGISTERED] Peer 5 successfully registered.
+2024-11-28 13:04:35,532 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:04:35,537 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 13:04:35,539 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 13:04:35,541 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 13:04:40,212 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem40k.txt
+2024-11-28 13:04:40,214 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem40k.txt sent successfully.
+2024-11-28 13:04:40,215 - tracker - INFO - [UNLOCKED] File lorem40k.txt is now available for other peers.
+2024-11-28 13:04:42,189 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:04:42,196 - tracker - INFO - [UPDATED] Peer 2 info successfully updated.
+2024-11-28 13:04:42,199 - tracker - INFO - [LISTREQUEST] Peer 2 requested the peer list.
+2024-11-28 13:04:42,200 - tracker - INFO - [INFO] Sent peer list to peer 2
+2024-11-28 13:04:46,475 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem40k.txt
+2024-11-28 13:04:46,477 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem40k.txt sent successfully.
+2024-11-28 13:04:46,481 - tracker - INFO - [UNLOCKED] File lorem40k.txt is now available for other peers.
+2024-11-28 13:04:53,084 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:04:53,089 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 13:04:53,093 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 13:04:53,095 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 13:05:06,526 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:05:06,536 - tracker - INFO - [UPDATED] Peer 2 info successfully updated.
+2024-11-28 13:05:06,539 - tracker - INFO - [LISTREQUEST] Peer 2 requested the peer list.
+2024-11-28 13:05:06,543 - tracker - INFO - [INFO] Sent peer list to peer 2
+2024-11-28 13:05:11,185 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem80k.txt
+2024-11-28 13:05:11,187 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem80k.txt sent successfully.
+2024-11-28 13:05:11,190 - tracker - INFO - [UNLOCKED] File lorem80k.txt is now available for other peers.
+2024-11-28 13:05:16,632 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:05:16,652 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 13:05:16,657 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 13:05:16,662 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 13:05:24,383 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem80k.txt
+2024-11-28 13:05:24,386 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem80k.txt sent successfully.
+2024-11-28 13:05:24,393 - tracker - INFO - [UNLOCKED] File lorem80k.txt is now available for other peers.
+2024-11-28 13:05:32,646 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:05:32,667 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 13:05:32,686 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 13:05:32,702 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 13:07:42,169 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem80k.txt
+2024-11-28 13:07:42,176 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem80k.txt sent successfully.
+2024-11-28 13:07:42,178 - tracker - INFO - [UNLOCKED] File lorem80k.txt is now available for other peers.
+2024-11-28 13:08:00,524 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:08:00,547 - tracker - INFO - [UPDATED] Peer 4 info successfully updated.
+2024-11-28 13:08:00,553 - tracker - INFO - [LISTREQUEST] Peer 4 requested the peer list.
+2024-11-28 13:08:00,558 - tracker - INFO - [INFO] Sent peer list to peer 4
+2024-11-28 13:10:05,486 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 13:10:05,496 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 13:10:05,498 - tracker - INFO - [INFO] Client ('172.16.63.231', 55155) disconnected gracefully
+2024-11-28 13:10:07,466 - tracker - INFO - [DISCONNECT] Peer 2 requested to disconnect.
+2024-11-28 13:10:07,476 - tracker - INFO - [INFO] Peer 2 successfully disconnected.
+2024-11-28 13:10:07,478 - tracker - INFO - [INFO] Client ('172.16.63.231', 55156) disconnected gracefully
+2024-11-28 13:10:09,395 - tracker - INFO - [DISCONNECT] Peer 3 requested to disconnect.
+2024-11-28 13:10:09,416 - tracker - INFO - [INFO] Peer 3 successfully disconnected.
+2024-11-28 13:10:09,427 - tracker - INFO - [INFO] Client ('172.16.63.231', 55157) disconnected gracefully
+2024-11-28 13:10:11,401 - tracker - INFO - [DISCONNECT] Peer 4 requested to disconnect.
+2024-11-28 13:10:11,403 - tracker - INFO - [INFO] Peer 4 successfully disconnected.
+2024-11-28 13:10:11,406 - tracker - INFO - [INFO] Client ('172.16.63.231', 55160) disconnected gracefully
+2024-11-28 13:10:13,358 - tracker - INFO - [DISCONNECT] Peer 5 requested to disconnect.
+2024-11-28 13:10:13,363 - tracker - INFO - [INFO] Peer 5 successfully disconnected.
+2024-11-28 13:10:13,378 - tracker - INFO - [INFO] Client ('172.16.63.231', 55161) disconnected gracefully
+2024-11-28 13:46:39,649 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 16:40:13,419 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 16:40:23,892 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 16:40:23,896 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 16:40:23,899 - tracker - ERROR - [ERROR] Error handling piece info request: too many values to unpack (expected 2)
+2024-11-28 16:40:23,907 - tracker - ERROR - [ERROR] Exception occurred with client ('172.16.63.231', 60315): cannot access local variable 'file_lock' where it is not associated with a value
+2024-11-28 16:41:03,831 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 16:41:03,833 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 16:41:05,273 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 16:41:05,283 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 16:41:05,289 - tracker - INFO - [INFO] Client ('172.16.63.231', 60334) disconnected gracefully
+=======
+2024-11-28 13:22:16,701 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 13:22:27,084 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 13:22:27,084 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 13:22:35,516 - tracker - INFO - [REGISTER] Peer 2 connected.
+2024-11-28 13:22:35,516 - tracker - INFO - [REGISTERED] Peer 2 successfully registered.
+2024-11-28 13:22:53,763 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 13:22:53,765 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 13:22:53,765 - tracker - INFO - [INFO] Client ('10.128.195.244', 61526) disconnected gracefully
+2024-11-28 13:23:03,650 - tracker - INFO - [DISCONNECT] Peer 2 requested to disconnect.
+2024-11-28 13:23:03,651 - tracker - INFO - [INFO] Peer 2 successfully disconnected.
+2024-11-28 13:23:03,651 - tracker - INFO - [INFO] Client ('10.128.195.244', 61527) disconnected gracefully
+2024-11-28 13:23:40,937 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 13:23:40,937 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 13:23:44,792 - tracker - INFO - [REGISTER] Peer 2 connected.
+2024-11-28 13:23:44,792 - tracker - INFO - [REGISTERED] Peer 2 successfully registered.
+2024-11-28 13:23:48,421 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 13:23:48,422 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 13:24:50,690 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 13:24:50,692 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 13:24:50,692 - tracker - INFO - [INFO] Client ('10.128.195.244', 61545) disconnected gracefully
+2024-11-28 13:24:52,552 - tracker - INFO - [DISCONNECT] Peer 2 requested to disconnect.
+2024-11-28 13:24:52,553 - tracker - INFO - [INFO] Peer 2 successfully disconnected.
+2024-11-28 13:24:52,553 - tracker - INFO - [INFO] Client ('10.128.195.244', 61546) disconnected gracefully
+2024-11-28 13:37:54,150 - tracker - INFO - 
+[INFO] Shutting down the tracker...
+2024-11-28 13:42:35,005 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 13:45:30,181 - tracker - INFO - 
+[INFO] Shutting down the tracker...
+2024-11-28 13:45:54,428 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 13:47:02,188 - tracker - INFO - [REGISTER] Peer 2 connected.
+2024-11-28 13:47:02,189 - tracker - INFO - [REGISTERED] Peer 2 successfully registered.
+2024-11-28 13:49:34,402 - tracker - INFO - [DISCONNECT] Peer 2 requested to disconnect.
+2024-11-28 13:49:34,403 - tracker - INFO - [INFO] Peer 2 successfully disconnected.
+2024-11-28 13:49:34,403 - tracker - INFO - [INFO] Client ('192.168.68.52', 62045) disconnected gracefully
+2024-11-28 13:49:35,866 - tracker - INFO - 
+[INFO] Shutting down the tracker...
+2024-11-28 13:50:00,317 - tracker - ERROR - [ERROR] [Errno 48] Address already in use. The port 4000 might be already in use.
+2024-11-28 13:50:00,317 - tracker - ERROR - Please make sure no other process is using this port.
+2024-11-28 13:50:03,223 - tracker - ERROR - [ERROR] [Errno 48] Address already in use. The port 4000 might be already in use.
+2024-11-28 13:50:03,223 - tracker - ERROR - Please make sure no other process is using this port.
+2024-11-28 13:50:09,086 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 13:50:13,602 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 13:50:13,603 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 13:50:45,653 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 13:50:45,654 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 13:50:45,655 - tracker - INFO - [INFO] Client ('192.168.68.156', 61606) disconnected gracefully
+2024-11-28 13:50:47,418 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 13:50:47,419 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 13:51:23,522 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 13:51:23,522 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 13:51:25,988 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 13:51:25,989 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 13:51:25,989 - tracker - INFO - [INFO] Client ('192.168.68.156', 61620) disconnected gracefully
+2024-11-28 13:53:04,041 - tracker - INFO - 
+[INFO] Shutting down the tracker...
+2024-11-28 13:53:05,539 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 13:53:40,579 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 13:53:40,581 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 13:53:58,615 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 13:53:58,617 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 13:53:58,618 - tracker - INFO - [INFO] Client ('192.168.68.156', 61686) disconnected gracefully
+2024-11-28 13:54:00,098 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 13:54:00,100 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 13:54:47,227 - tracker - INFO - [REGISTER] Peer 5 connected.
+2024-11-28 13:54:47,230 - tracker - INFO - [REGISTERED] Peer 5 successfully registered.
+2024-11-28 13:55:25,406 - tracker - INFO - [DISCONNECT] Peer 5 requested to disconnect.
+2024-11-28 13:55:25,408 - tracker - INFO - [INFO] Peer 5 successfully disconnected.
+2024-11-28 13:55:25,408 - tracker - INFO - [INFO] Client ('192.168.68.19', 63489) disconnected gracefully
+2024-11-28 13:55:27,401 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 13:55:27,403 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 13:55:27,403 - tracker - INFO - [INFO] Client ('192.168.68.156', 61716) disconnected gracefully
+2024-11-28 13:57:03,375 - tracker - INFO - 
+[INFO] Shutting down the tracker...
+2024-11-28 13:57:05,638 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 13:57:10,565 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 13:57:10,566 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 13:57:16,385 - tracker - INFO - [REGISTER] Peer 5 connected.
+2024-11-28 13:57:16,388 - tracker - INFO - [REGISTERED] Peer 5 successfully registered.
+2024-11-28 13:57:17,898 - tracker - INFO - [REGISTER] Peer 3 connected.
+2024-11-28 13:57:17,898 - tracker - INFO - [REGISTERED] Peer 3 successfully registered.
+2024-11-28 13:57:36,881 - tracker - INFO - [DISCONNECT] Peer 5 requested to disconnect.
+2024-11-28 13:57:36,884 - tracker - INFO - [INFO] Peer 5 successfully disconnected.
+2024-11-28 13:57:36,884 - tracker - INFO - [INFO] Client ('192.168.68.19', 63611) disconnected gracefully
+2024-11-28 13:57:42,569 - tracker - INFO - [REGISTER] Peer 5 connected.
+2024-11-28 13:57:42,575 - tracker - INFO - [REGISTERED] Peer 5 successfully registered.
+2024-11-28 13:58:08,112 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:58:08,117 - tracker - INFO - [UPDATED] Peer 5 info successfully updated.
+2024-11-28 13:58:08,151 - tracker - INFO - [LISTREQUEST] Peer 5 requested the peer list.
+2024-11-28 13:58:08,151 - tracker - INFO - [INFO] Sent peer list to peer 5
+2024-11-28 13:58:16,257 - tracker - INFO - [DISCONNECT] Peer 5 requested to disconnect.
+2024-11-28 13:58:16,259 - tracker - INFO - [INFO] Peer 5 successfully disconnected.
+2024-11-28 13:58:16,259 - tracker - INFO - [INFO] Client ('192.168.68.19', 63654) disconnected gracefully
+2024-11-28 13:58:23,470 - tracker - INFO - [REGISTER] Peer 5 connected.
+2024-11-28 13:58:23,471 - tracker - INFO - [REGISTERED] Peer 5 successfully registered.
+2024-11-28 13:58:25,815 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:58:25,864 - tracker - INFO - [UPDATED] Peer 5 info successfully updated.
+2024-11-28 13:58:25,885 - tracker - INFO - [LISTREQUEST] Peer 5 requested the peer list.
+2024-11-28 13:58:25,885 - tracker - INFO - [INFO] Sent peer list to peer 5
+2024-11-28 13:59:18,758 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem2000.txt
+2024-11-28 13:59:18,758 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem2000.txt sent successfully.
+2024-11-28 13:59:18,758 - tracker - INFO - [UNLOCKED] File lorem2000.txt is now available for other peers.
+2024-11-28 13:59:24,300 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 13:59:24,313 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 13:59:24,341 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 13:59:24,341 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 13:59:24,399 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61783): [Errno 54] Connection reset by peer
+2024-11-28 13:59:44,912 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem2000.txt
+2024-11-28 13:59:44,913 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem2000.txt sent successfully.
+2024-11-28 13:59:44,914 - tracker - INFO - [UNLOCKED] File lorem2000.txt is now available for other peers.
+2024-11-28 13:59:44,914 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62557): [Errno 54] Connection reset by peer
+2024-11-28 13:59:44,917 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 13:59:44,918 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:00:36,082 - tracker - INFO - [DISCONNECT] Peer 3 requested to disconnect.
+2024-11-28 14:00:36,084 - tracker - INFO - [INFO] Peer 3 successfully disconnected.
+2024-11-28 14:00:36,084 - tracker - INFO - [INFO] Client ('192.168.68.52', 62559) disconnected gracefully
+2024-11-28 14:00:47,429 - tracker - INFO - [REGISTER] Peer 3 connected.
+2024-11-28 14:00:47,430 - tracker - INFO - [REGISTERED] Peer 3 successfully registered.
+2024-11-28 14:00:55,940 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem2000.txt
+2024-11-28 14:00:55,941 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem2000.txt sent successfully.
+2024-11-28 14:00:55,941 - tracker - INFO - [UNLOCKED] File lorem2000.txt is now available for other peers.
+2024-11-28 14:00:55,941 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62562): [Errno 54] Connection reset by peer
+2024-11-28 14:00:55,944 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:00:55,944 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:00:55,944 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62563): [Errno 54] Connection reset by peer
+2024-11-28 14:01:15,156 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem2000.txt
+2024-11-28 14:01:15,157 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem2000.txt sent successfully.
+2024-11-28 14:01:15,157 - tracker - INFO - [UNLOCKED] File lorem2000.txt is now available for other peers.
+2024-11-28 14:01:15,157 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62565): [Errno 54] Connection reset by peer
+2024-11-28 14:01:15,160 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:01:15,160 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:01:15,161 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62566): [Errno 54] Connection reset by peer
+2024-11-28 14:01:25,296 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem2000.txt
+2024-11-28 14:01:25,297 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem2000.txt sent successfully.
+2024-11-28 14:01:25,297 - tracker - INFO - [UNLOCKED] File lorem2000.txt is now available for other peers.
+2024-11-28 14:01:26,202 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:01:26,202 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 14:01:26,202 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:01:26,203 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:03:05,715 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 14:03:05,717 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 14:03:05,717 - tracker - INFO - [INFO] Client ('192.168.68.156', 61815) disconnected gracefully
+2024-11-28 14:03:07,294 - tracker - INFO - [DISCONNECT] Peer 3 requested to disconnect.
+2024-11-28 14:03:07,295 - tracker - INFO - [INFO] Peer 3 successfully disconnected.
+2024-11-28 14:03:07,295 - tracker - INFO - [INFO] Client ('192.168.68.52', 62597) disconnected gracefully
+2024-11-28 14:03:07,954 - tracker - INFO - [DISCONNECT] Peer 5 requested to disconnect.
+2024-11-28 14:03:07,954 - tracker - INFO - [INFO] Peer 5 successfully disconnected.
+2024-11-28 14:03:07,954 - tracker - INFO - [INFO] Client ('192.168.68.19', 63889) disconnected gracefully
+2024-11-28 14:03:29,755 - tracker - INFO - [REGISTER] Peer 3 connected.
+2024-11-28 14:03:29,755 - tracker - INFO - [REGISTERED] Peer 3 successfully registered.
+2024-11-28 14:03:37,219 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 14:03:37,220 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 14:03:38,275 - tracker - INFO - [REGISTER] Peer 5 connected.
+2024-11-28 14:03:38,277 - tracker - INFO - [REGISTERED] Peer 5 successfully registered.
+2024-11-28 14:03:58,476 - tracker - INFO - [DISCONNECT] Peer 3 requested to disconnect.
+2024-11-28 14:03:58,477 - tracker - INFO - [INFO] Peer 3 successfully disconnected.
+2024-11-28 14:03:58,478 - tracker - INFO - [INFO] Client ('192.168.68.52', 62604) disconnected gracefully
+2024-11-28 14:04:09,524 - tracker - INFO - [REGISTER] Peer 3 connected.
+2024-11-28 14:04:09,524 - tracker - INFO - [REGISTERED] Peer 3 successfully registered.
+2024-11-28 14:04:30,567 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:04:30,620 - tracker - INFO - [UPDATED] Peer 5 info successfully updated.
+2024-11-28 14:04:30,660 - tracker - INFO - [LISTREQUEST] Peer 5 requested the peer list.
+2024-11-28 14:04:30,660 - tracker - INFO - [INFO] Sent peer list to peer 5
+2024-11-28 14:04:51,022 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:04:51,024 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:04:51,025 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:04:51,025 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62616): [Errno 54] Connection reset by peer
+2024-11-28 14:04:51,027 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:04:51,028 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:04:51,029 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62617): [Errno 54] Connection reset by peer
+2024-11-28 14:05:05,038 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:05:05,039 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:05:05,039 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:05:11,482 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:05:11,485 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 14:05:11,485 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:05:11,485 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:05:41,324 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:05:41,327 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:05:41,327 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:05:41,385 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61851): [Errno 54] Connection reset by peer
+2024-11-28 14:05:41,423 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:05:41,425 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:05:43,282 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:05:43,285 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:05:43,285 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:05:43,316 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61854): [Errno 54] Connection reset by peer
+2024-11-28 14:05:43,351 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:05:43,352 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:05:43,385 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61855): [Errno 54] Connection reset by peer
+2024-11-28 14:05:44,619 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:05:44,624 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:05:44,624 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:05:44,641 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61856): [Errno 54] Connection reset by peer
+2024-11-28 14:05:44,677 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:05:44,680 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:05:44,703 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61857): [Errno 54] Connection reset by peer
+2024-11-28 14:05:45,729 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:05:45,731 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:05:45,731 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:05:45,760 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61858): [Errno 54] Connection reset by peer
+2024-11-28 14:05:45,778 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:05:45,780 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:05:45,844 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61859): [Errno 54] Connection reset by peer
+2024-11-28 14:05:46,774 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:05:46,778 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:05:46,778 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:05:46,797 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61860): [Errno 54] Connection reset by peer
+2024-11-28 14:05:46,845 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:05:46,848 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:05:46,865 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61861): [Errno 54] Connection reset by peer
+2024-11-28 14:05:47,790 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:05:47,793 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:05:47,793 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:05:47,805 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61862): [Errno 54] Connection reset by peer
+2024-11-28 14:05:47,824 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:05:47,827 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:05:49,949 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:05:49,951 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:05:49,952 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:05:50,030 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61864): [Errno 54] Connection reset by peer
+2024-11-28 14:05:50,070 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:05:50,072 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:05:50,134 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 61865): [Errno 54] Connection reset by peer
+2024-11-28 14:05:51,770 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:05:51,773 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:05:51,773 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:10:50,401 - tracker - INFO - [DISCONNECT] Peer 3 requested to disconnect.
+2024-11-28 14:10:50,408 - tracker - INFO - [INFO] Peer 3 successfully disconnected.
+2024-11-28 14:10:50,408 - tracker - INFO - [INFO] Client ('192.168.68.52', 62917) disconnected gracefully
+2024-11-28 14:11:18,762 - tracker - INFO - 
+[INFO] Shutting down the tracker...
+2024-11-28 14:11:20,553 - tracker - ERROR - [ERROR] [Errno 48] Address already in use. The port 4000 might be already in use.
+2024-11-28 14:11:20,553 - tracker - ERROR - Please make sure no other process is using this port.
+2024-11-28 14:11:31,572 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 14:11:39,517 - tracker - INFO - [REGISTER] Peer 3 connected.
+2024-11-28 14:11:39,517 - tracker - INFO - [REGISTERED] Peer 3 successfully registered.
+2024-11-28 14:11:40,157 - tracker - INFO - [REGISTER] Peer 5 connected.
+2024-11-28 14:11:40,157 - tracker - INFO - [REGISTERED] Peer 5 successfully registered.
+2024-11-28 14:11:46,698 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 14:11:46,700 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 14:11:50,223 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:11:50,236 - tracker - INFO - [UPDATED] Peer 5 info successfully updated.
+2024-11-28 14:11:50,268 - tracker - INFO - [LISTREQUEST] Peer 5 requested the peer list.
+2024-11-28 14:11:50,268 - tracker - INFO - [INFO] Sent peer list to peer 5
+2024-11-28 14:12:15,706 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:12:15,707 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:12:15,708 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:12:15,724 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62133): [Errno 54] Connection reset by peer
+2024-11-28 14:12:15,741 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:12:15,741 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:12:21,644 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:12:21,645 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:12:21,645 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:12:21,789 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62144): [Errno 54] Connection reset by peer
+2024-11-28 14:12:21,808 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:12:21,808 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:12:21,822 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62145): [Errno 54] Connection reset by peer
+2024-11-28 14:12:23,704 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:12:23,705 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:12:23,705 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:12:23,723 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62149): [Errno 54] Connection reset by peer
+2024-11-28 14:12:23,741 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:12:23,741 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:12:23,751 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62150): [Errno 54] Connection reset by peer
+2024-11-28 14:12:25,122 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:12:25,123 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:12:25,123 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:12:25,135 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62151): [Errno 54] Connection reset by peer
+2024-11-28 14:12:25,145 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:12:25,146 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:12:25,158 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62152): [Errno 54] Connection reset by peer
+2024-11-28 14:12:26,210 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:12:26,211 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:12:26,211 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:12:26,224 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62153): [Errno 54] Connection reset by peer
+2024-11-28 14:12:26,231 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:12:26,232 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:12:26,248 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62154): [Errno 54] Connection reset by peer
+2024-11-28 14:12:27,205 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:12:27,206 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:12:27,206 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:12:27,226 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62155): [Errno 54] Connection reset by peer
+2024-11-28 14:12:27,238 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:12:27,239 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:12:27,251 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62156): [Errno 54] Connection reset by peer
+2024-11-28 14:12:27,948 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:12:27,948 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:12:27,949 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:12:27,967 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62157): [Errno 54] Connection reset by peer
+2024-11-28 14:12:27,986 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:12:27,986 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:12:28,003 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62158): [Errno 54] Connection reset by peer
+2024-11-28 14:12:28,776 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:12:28,776 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:12:28,776 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:12:28,822 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62159): [Errno 54] Connection reset by peer
+2024-11-28 14:12:28,838 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:12:28,839 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:12:28,849 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62160): [Errno 54] Connection reset by peer
+2024-11-28 14:12:29,832 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:12:29,833 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:12:29,833 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:14:21,039 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:14:21,042 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 14:14:21,246 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:14:21,246 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:14:21,421 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62218): [Errno 54] Connection reset by peer
+2024-11-28 14:15:04,667 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:15:04,668 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:15:04,668 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:15:04,669 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62983): [Errno 54] Connection reset by peer
+2024-11-28 14:15:04,674 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:15:04,674 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:15:04,674 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62984): [Errno 54] Connection reset by peer
+2024-11-28 14:15:06,947 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:15:06,948 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:15:06,948 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:15:06,948 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62985): [Errno 54] Connection reset by peer
+2024-11-28 14:15:06,951 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:15:06,951 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:15:07,950 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:15:07,950 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:15:07,951 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:15:07,951 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 62987): [Errno 54] Connection reset by peer
+2024-11-28 14:15:07,953 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:15:07,954 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:15:08,771 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:15:08,772 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:15:08,772 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:15:10,918 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:15:10,919 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 14:15:10,919 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:15:10,920 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:16:27,693 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:16:27,694 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:16:27,707 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62277): [Errno 54] Connection reset by peer
+2024-11-28 14:16:27,720 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:16:27,720 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:16:27,893 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:16:27,894 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:16:27,917 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62279): [Errno 54] Connection reset by peer
+2024-11-28 14:16:29,152 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:16:29,154 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:16:31,678 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:16:31,679 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:16:31,679 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:16:31,805 - tracker - INFO - [LISTREQUEST] Peer 5 requested the peer list.
+2024-11-28 14:16:31,807 - tracker - INFO - [INFO] Sent peer list to peer 5
+2024-11-28 14:17:02,784 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:17:02,806 - tracker - INFO - [UPDATED] Peer 5 info successfully updated.
+2024-11-28 14:17:02,835 - tracker - INFO - [LISTREQUEST] Peer 5 requested the peer list.
+2024-11-28 14:17:02,835 - tracker - INFO - [INFO] Sent peer list to peer 5
+2024-11-28 14:17:26,454 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:17:26,455 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:17:26,456 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:17:26,473 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62292): [Errno 54] Connection reset by peer
+2024-11-28 14:17:26,574 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:17:26,575 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:17:26,616 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62293): [Errno 54] Connection reset by peer
+2024-11-28 14:17:32,594 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:17:32,595 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:17:32,595 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:17:32,608 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62295): [Errno 54] Connection reset by peer
+2024-11-28 14:17:32,630 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:17:32,630 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:17:32,666 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62296): [Errno 54] Connection reset by peer
+2024-11-28 14:17:33,824 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:17:33,825 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:17:33,826 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:17:33,915 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62297): [Errno 54] Connection reset by peer
+2024-11-28 14:17:33,930 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:17:33,931 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:17:35,259 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:17:35,260 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:17:35,260 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:17:35,273 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62299): [Errno 54] Connection reset by peer
+2024-11-28 14:17:35,280 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:17:35,281 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:17:36,425 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:17:36,426 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:17:36,427 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:17:36,472 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62301): [Errno 54] Connection reset by peer
+2024-11-28 14:17:36,482 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:17:36,483 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:17:36,493 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62302): [Errno 54] Connection reset by peer
+2024-11-28 14:17:37,480 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:17:37,481 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:17:37,481 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:17:37,505 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62303): [Errno 54] Connection reset by peer
+2024-11-28 14:17:37,526 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:17:37,527 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:17:37,546 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62304): [Errno 54] Connection reset by peer
+2024-11-28 14:17:38,326 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:17:38,328 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:17:38,328 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:17:38,346 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62305): [Errno 54] Connection reset by peer
+2024-11-28 14:17:38,362 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:17:38,363 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:17:38,379 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62306): [Errno 54] Connection reset by peer
+2024-11-28 14:17:38,979 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:17:38,981 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:17:38,981 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:19:54,447 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:19:54,507 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 14:19:54,553 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:19:54,553 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:19:54,618 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62410): [Errno 54] Connection reset by peer
+2024-11-28 14:21:14,719 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:21:14,720 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:21:14,721 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:21:14,721 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 63103): [Errno 54] Connection reset by peer
+2024-11-28 14:21:14,724 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:21:14,725 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:21:22,008 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:21:22,009 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:21:22,009 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:21:22,010 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 63105): [Errno 54] Connection reset by peer
+2024-11-28 14:21:22,012 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:21:22,014 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:21:22,745 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:21:22,747 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:21:22,747 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:21:22,748 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 63109): [Errno 54] Connection reset by peer
+2024-11-28 14:21:22,750 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:21:22,750 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:21:22,751 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.52', 63110): [Errno 54] Connection reset by peer
+2024-11-28 14:21:23,373 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_543.mkv
+2024-11-28 14:21:23,375 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_543.mkv sent successfully.
+2024-11-28 14:21:23,375 - tracker - INFO - [UNLOCKED] File demo_543.mkv is now available for other peers.
+2024-11-28 14:21:31,876 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:21:31,878 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 14:21:31,878 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 14:21:31,878 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 14:24:40,570 - tracker - INFO - [REGISTER] Peer 6 connected.
+2024-11-28 14:24:40,577 - tracker - INFO - [REGISTERED] Peer 6 successfully registered.
+2024-11-28 14:25:26,968 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:25:27,065 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 14:25:27,109 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:25:27,111 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:25:27,123 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62567): [Errno 54] Connection reset by peer
+2024-11-28 14:25:27,188 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignmen1.pdf
+2024-11-28 14:25:27,188 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignmen1.pdf sent successfully.
+2024-11-28 14:25:27,189 - tracker - INFO - [UNLOCKED] File Assignmen1.pdf is now available for other peers.
+2024-11-28 14:25:27,374 - tracker - INFO - [LISTREQUEST] Peer 6 requested the peer list.
+2024-11-28 14:25:27,376 - tracker - INFO - [INFO] Sent peer list to peer 6
+2024-11-28 14:27:38,455 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 14:27:38,457 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 14:27:38,458 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 14:27:41,799 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:27:41,875 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 14:27:42,025 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:27:42,026 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:27:42,069 - tracker - ERROR - [ERROR] Exception occurred with client ('192.168.68.156', 62624): [Errno 54] Connection reset by peer
+2024-11-28 14:28:19,772 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:28:19,801 - tracker - INFO - [UPDATED] Peer 6 info successfully updated.
+2024-11-28 14:28:19,915 - tracker - INFO - [LISTREQUEST] Peer 6 requested the peer list.
+2024-11-28 14:28:19,918 - tracker - INFO - [INFO] Sent peer list to peer 6
+2024-11-28 14:29:58,319 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:29:58,394 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 14:29:58,691 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 14:29:58,693 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 14:29:59,180 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:29:59,605 - tracker - INFO - [UPDATED] Peer 6 info successfully updated.
+2024-11-28 14:29:59,832 - tracker - INFO - [LISTREQUEST] Peer 6 requested the peer list.
+2024-11-28 14:29:59,833 - tracker - INFO - [INFO] Sent peer list to peer 6
+2024-11-28 14:32:07,383 - tracker - INFO - [REGISTER] Peer 10 connected.
+2024-11-28 14:32:07,399 - tracker - INFO - [REGISTERED] Peer 10 successfully registered.
+2024-11-28 14:32:08,622 - tracker - INFO - [REGISTER] Peer 8 connected.
+2024-11-28 14:32:08,633 - tracker - INFO - [REGISTERED] Peer 8 successfully registered.
+2024-11-28 14:34:14,449 - tracker - INFO - [PIECE INFO REQUEST] File requested: mit-thesis-template.pdf
+2024-11-28 14:34:14,452 - tracker - INFO - [SENT] Piece-to-peer mapping for file mit-thesis-template.pdf sent successfully.
+2024-11-28 14:34:14,452 - tracker - INFO - [UNLOCKED] File mit-thesis-template.pdf is now available for other peers.
+2024-11-28 14:34:15,532 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem4m.txt
+2024-11-28 14:34:15,533 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem4m.txt sent successfully.
+2024-11-28 14:34:15,533 - tracker - INFO - [UNLOCKED] File lorem4m.txt is now available for other peers.
+2024-11-28 14:35:05,937 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:35:06,177 - tracker - INFO - [UPDATED] Peer 10 info successfully updated.
+2024-11-28 14:35:06,274 - tracker - INFO - [LISTREQUEST] Peer 10 requested the peer list.
+2024-11-28 14:35:06,387 - tracker - INFO - [INFO] Sent peer list to peer 10
+2024-11-28 14:35:24,727 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 14:35:24,776 - tracker - INFO - [UPDATED] Peer 8 info successfully updated.
+2024-11-28 14:35:24,847 - tracker - INFO - [LISTREQUEST] Peer 8 requested the peer list.
+2024-11-28 14:35:24,974 - tracker - INFO - [INFO] Sent peer list to peer 8
+2024-11-28 14:38:57,452 - tracker - INFO - [DISCONNECT] Peer 3 requested to disconnect.
+2024-11-28 14:38:57,472 - tracker - INFO - [INFO] Peer 3 successfully disconnected.
+2024-11-28 14:38:57,472 - tracker - INFO - [INFO] Client ('192.168.68.52', 63346) disconnected gracefully
+2024-11-28 14:38:59,249 - tracker - INFO - 
+[INFO] Shutting down the tracker...
+>>>>>>> 10642369d851ba6a6a4a8a59a83d6238e5449807
+2024-11-28 16:58:16,118 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 16:58:21,515 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 16:58:42,942 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 16:58:43,007 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 16:58:43,008 - tracker - INFO - [INFO] Client ('172.16.63.231', 60330) disconnected gracefully
+2024-11-28 17:00:26,268 - tracker - INFO - Tracker running on 0.0.0.0:4000
+2024-11-28 17:00:30,548 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 17:00:30,551 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 17:00:39,280 - tracker - INFO - [REGISTER] Peer 2 connected.
+2024-11-28 17:00:39,284 - tracker - INFO - [REGISTERED] Peer 2 successfully registered.
+2024-11-28 17:00:43,534 - tracker - INFO - [REGISTER] Peer 3 connected.
+2024-11-28 17:00:43,537 - tracker - INFO - [REGISTERED] Peer 3 successfully registered.
+2024-11-28 17:00:48,385 - tracker - INFO - [REGISTER] Peer 4 connected.
+2024-11-28 17:00:48,394 - tracker - INFO - [REGISTERED] Peer 4 successfully registered.
+2024-11-28 17:00:58,025 - tracker - INFO - [PIECE INFO REQUEST] File requested: a
+2024-11-28 17:00:58,027 - tracker - INFO - [SENT] Piece-to-peer mapping for file a sent successfully.
+2024-11-28 17:00:58,035 - tracker - INFO - [UNLOCKED] File a is now available for other peers.
+2024-11-28 17:00:58,037 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 17:00:58,040 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 17:00:59,287 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 17:00:59,293 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 17:01:22,302 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:01:22,307 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 17:01:22,312 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 17:01:22,315 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 17:01:56,261 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 17:01:56,263 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 17:01:56,265 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 17:01:57,692 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:01:57,697 - tracker - INFO - [UPDATED] Peer 2 info successfully updated.
+2024-11-28 17:01:57,704 - tracker - INFO - [LISTREQUEST] Peer 2 requested the peer list.
+2024-11-28 17:01:57,705 - tracker - INFO - [INFO] Sent peer list to peer 2
+2024-11-28 17:02:21,134 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 17:02:21,136 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 17:02:21,137 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 17:02:27,618 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:02:27,622 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 17:02:27,625 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 17:02:27,626 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 17:03:01,285 - tracker - INFO - [PIECE INFO REQUEST] File requested: Assignment1.pdf
+2024-11-28 17:03:01,287 - tracker - INFO - [SENT] Piece-to-peer mapping for file Assignment1.pdf sent successfully.
+2024-11-28 17:03:01,288 - tracker - INFO - [UNLOCKED] File Assignment1.pdf is now available for other peers.
+2024-11-28 17:03:14,443 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:03:14,453 - tracker - INFO - [UPDATED] Peer 4 info successfully updated.
+2024-11-28 17:03:14,458 - tracker - INFO - [LISTREQUEST] Peer 4 requested the peer list.
+2024-11-28 17:03:14,462 - tracker - INFO - [INFO] Sent peer list to peer 4
+2024-11-28 17:17:06,369 - tracker - INFO - [LISTREQUEST] Peer 4 requested the peer list.
+2024-11-28 17:17:06,371 - tracker - INFO - [INFO] Sent peer list to peer 4
+2024-11-28 17:17:14,388 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 17:17:14,390 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 17:17:15,259 - tracker - INFO - [LISTREQUEST] Peer 2 requested the peer list.
+2024-11-28 17:17:15,261 - tracker - INFO - [INFO] Sent peer list to peer 2
+2024-11-28 17:17:16,051 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 17:17:16,052 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 17:17:16,929 - tracker - INFO - [LISTREQUEST] Peer 4 requested the peer list.
+2024-11-28 17:17:16,932 - tracker - INFO - [INFO] Sent peer list to peer 4
+2024-11-28 17:17:29,180 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:17:29,192 - tracker - INFO - [UPDATED] Peer 4 info successfully updated.
+2024-11-28 17:17:29,195 - tracker - INFO - [LISTREQUEST] Peer 4 requested the peer list.
+2024-11-28 17:17:29,200 - tracker - INFO - [INFO] Sent peer list to peer 4
+2024-11-28 17:17:56,949 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_468.mp4
+2024-11-28 17:17:56,951 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_468.mp4 sent successfully.
+2024-11-28 17:17:56,952 - tracker - INFO - [UNLOCKED] File demo_468.mp4 is now available for other peers.
+2024-11-28 17:18:00,947 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:18:00,964 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 17:18:00,967 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 17:18:00,973 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 17:18:11,796 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_468.mp4
+2024-11-28 17:18:11,799 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_468.mp4 sent successfully.
+2024-11-28 17:18:11,814 - tracker - INFO - [UNLOCKED] File demo_468.mp4 is now available for other peers.
+2024-11-28 17:18:17,680 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:18:17,699 - tracker - INFO - [UPDATED] Peer 2 info successfully updated.
+2024-11-28 17:18:17,709 - tracker - INFO - [LISTREQUEST] Peer 2 requested the peer list.
+2024-11-28 17:18:17,714 - tracker - INFO - [INFO] Sent peer list to peer 2
+2024-11-28 17:18:27,771 - tracker - INFO - [PIECE INFO REQUEST] File requested: demo_468.mp4
+2024-11-28 17:18:27,773 - tracker - INFO - [SENT] Piece-to-peer mapping for file demo_468.mp4 sent successfully.
+2024-11-28 17:18:27,775 - tracker - INFO - [UNLOCKED] File demo_468.mp4 is now available for other peers.
+2024-11-28 17:18:42,900 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:18:42,924 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 17:18:42,927 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 17:18:42,929 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 17:30:15,274 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 17:30:15,288 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 17:30:15,291 - tracker - INFO - [INFO] Client ('172.16.63.231', 58342) disconnected gracefully
+2024-11-28 17:30:17,565 - tracker - INFO - [DISCONNECT] Peer 2 requested to disconnect.
+2024-11-28 17:30:17,575 - tracker - INFO - [INFO] Peer 2 successfully disconnected.
+2024-11-28 17:30:17,576 - tracker - INFO - [INFO] Client ('172.16.63.231', 58346) disconnected gracefully
+2024-11-28 17:30:19,642 - tracker - INFO - [DISCONNECT] Peer 3 requested to disconnect.
+2024-11-28 17:30:19,657 - tracker - INFO - [INFO] Peer 3 successfully disconnected.
+2024-11-28 17:30:19,668 - tracker - INFO - [INFO] Client ('172.16.63.231', 58347) disconnected gracefully
+2024-11-28 17:30:21,714 - tracker - INFO - [DISCONNECT] Peer 4 requested to disconnect.
+2024-11-28 17:30:21,717 - tracker - INFO - [INFO] Peer 4 successfully disconnected.
+2024-11-28 17:30:21,718 - tracker - INFO - [INFO] Client ('172.16.63.231', 58348) disconnected gracefully
+2024-11-28 17:31:00,270 - tracker - INFO - [REGISTER] Peer 1 connected.
+2024-11-28 17:31:00,272 - tracker - INFO - [REGISTERED] Peer 1 successfully registered.
+2024-11-28 17:31:01,888 - tracker - INFO - [REGISTER] Peer 2 connected.
+2024-11-28 17:31:01,899 - tracker - INFO - [REGISTERED] Peer 2 successfully registered.
+2024-11-28 17:31:03,654 - tracker - INFO - [REGISTER] Peer 3 connected.
+2024-11-28 17:31:03,736 - tracker - INFO - [REGISTERED] Peer 3 successfully registered.
+2024-11-28 17:31:05,619 - tracker - INFO - [REGISTER] Peer 4 connected.
+2024-11-28 17:31:05,621 - tracker - INFO - [REGISTERED] Peer 4 successfully registered.
+2024-11-28 17:31:12,099 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:31:12,102 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 17:31:12,108 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 17:31:12,110 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 17:31:22,595 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem160k.txt
+2024-11-28 17:31:22,598 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem160k.txt sent successfully.
+2024-11-28 17:31:22,600 - tracker - INFO - [UNLOCKED] File lorem160k.txt is now available for other peers.
+2024-11-28 17:31:23,512 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:31:23,535 - tracker - INFO - [UPDATED] Peer 2 info successfully updated.
+2024-11-28 17:31:23,564 - tracker - INFO - [LISTREQUEST] Peer 2 requested the peer list.
+2024-11-28 17:31:23,570 - tracker - INFO - [INFO] Sent peer list to peer 2
+2024-11-28 17:31:28,774 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem160.txt
+2024-11-28 17:31:28,777 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem160.txt sent successfully.
+2024-11-28 17:31:28,784 - tracker - INFO - [UNLOCKED] File lorem160.txt is now available for other peers.
+2024-11-28 17:31:28,801 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 17:31:28,812 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 17:31:33,389 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem160k.txt
+2024-11-28 17:31:33,390 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem160k.txt sent successfully.
+2024-11-28 17:31:33,391 - tracker - INFO - [UNLOCKED] File lorem160k.txt is now available for other peers.
+2024-11-28 17:31:33,849 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:31:33,855 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 17:31:33,859 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 17:31:33,861 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 17:31:45,012 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem160k.txt
+2024-11-28 17:31:45,014 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem160k.txt sent successfully.
+2024-11-28 17:31:45,015 - tracker - INFO - [UNLOCKED] File lorem160k.txt is now available for other peers.
+2024-11-28 17:31:45,567 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:31:45,577 - tracker - INFO - [UPDATED] Peer 4 info successfully updated.
+2024-11-28 17:31:45,580 - tracker - INFO - [LISTREQUEST] Peer 4 requested the peer list.
+2024-11-28 17:31:45,582 - tracker - INFO - [INFO] Sent peer list to peer 4
+2024-11-28 17:32:33,617 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:32:33,625 - tracker - INFO - [UPDATED] Peer 3 info successfully updated.
+2024-11-28 17:32:33,629 - tracker - INFO - [LISTREQUEST] Peer 3 requested the peer list.
+2024-11-28 17:32:33,639 - tracker - INFO - [INFO] Sent peer list to peer 3
+2024-11-28 17:32:42,500 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem310k.txt
+2024-11-28 17:32:42,501 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem310k.txt sent successfully.
+2024-11-28 17:32:42,504 - tracker - INFO - [UNLOCKED] File lorem310k.txt is now available for other peers.
+2024-11-28 17:32:42,509 - tracker - INFO - [LISTREQUEST] Peer 4 requested the peer list.
+2024-11-28 17:32:42,514 - tracker - INFO - [INFO] Sent peer list to peer 4
+2024-11-28 17:32:47,993 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem320k.txt
+2024-11-28 17:32:47,995 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem320k.txt sent successfully.
+2024-11-28 17:32:48,041 - tracker - INFO - [UNLOCKED] File lorem320k.txt is now available for other peers.
+2024-11-28 17:32:49,650 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:32:49,663 - tracker - INFO - [UPDATED] Peer 4 info successfully updated.
+2024-11-28 17:32:49,671 - tracker - INFO - [LISTREQUEST] Peer 4 requested the peer list.
+2024-11-28 17:32:49,675 - tracker - INFO - [INFO] Sent peer list to peer 4
+2024-11-28 17:32:58,479 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem320k.txt
+2024-11-28 17:32:58,481 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem320k.txt sent successfully.
+2024-11-28 17:32:58,483 - tracker - INFO - [UNLOCKED] File lorem320k.txt is now available for other peers.
+2024-11-28 17:32:59,785 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:32:59,800 - tracker - INFO - [UPDATED] Peer 2 info successfully updated.
+2024-11-28 17:32:59,804 - tracker - INFO - [LISTREQUEST] Peer 2 requested the peer list.
+2024-11-28 17:32:59,806 - tracker - INFO - [INFO] Sent peer list to peer 2
+2024-11-28 17:33:06,982 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem320k.txt
+2024-11-28 17:33:06,985 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem320k.txt sent successfully.
+2024-11-28 17:33:06,999 - tracker - INFO - [UNLOCKED] File lorem320k.txt is now available for other peers.
+2024-11-28 17:33:08,748 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:33:08,765 - tracker - INFO - [UPDATED] Peer 1 info successfully updated.
+2024-11-28 17:33:08,767 - tracker - INFO - [LISTREQUEST] Peer 1 requested the peer list.
+2024-11-28 17:33:08,771 - tracker - INFO - [INFO] Sent peer list to peer 1
+2024-11-28 17:33:24,589 - tracker - INFO - [REGISTER] Peer 5 connected.
+2024-11-28 17:33:24,598 - tracker - INFO - [REGISTERED] Peer 5 successfully registered.
+2024-11-28 17:33:29,689 - tracker - INFO - [PIECE INFO REQUEST] File requested: lorem320k.txt
+2024-11-28 17:33:29,692 - tracker - INFO - [SENT] Piece-to-peer mapping for file lorem320k.txt sent successfully.
+2024-11-28 17:33:29,693 - tracker - INFO - [UNLOCKED] File lorem320k.txt is now available for other peers.
+2024-11-28 17:33:31,052 - tracker - INFO - [DEBUG] Updating peer
+2024-11-28 17:33:31,072 - tracker - INFO - [UPDATED] Peer 5 info successfully updated.
+2024-11-28 17:33:31,079 - tracker - INFO - [LISTREQUEST] Peer 5 requested the peer list.
+2024-11-28 17:33:31,084 - tracker - INFO - [INFO] Sent peer list to peer 5
+2024-11-28 17:51:58,800 - tracker - INFO - [DISCONNECT] Peer 1 requested to disconnect.
+2024-11-28 17:51:58,892 - tracker - INFO - [INFO] Peer 1 successfully disconnected.
+2024-11-28 17:51:58,906 - tracker - INFO - [INFO] Client ('172.16.63.231', 61479) disconnected gracefully
+2024-11-28 17:52:02,375 - tracker - INFO - [DISCONNECT] Peer 2 requested to disconnect.
+2024-11-28 17:52:02,386 - tracker - INFO - [INFO] Peer 2 successfully disconnected.
+2024-11-28 17:52:02,391 - tracker - INFO - [INFO] Client ('172.16.63.231', 61483) disconnected gracefully
+2024-11-28 17:52:03,940 - tracker - INFO - [DISCONNECT] Peer 3 requested to disconnect.
+2024-11-28 17:52:03,950 - tracker - INFO - [INFO] Peer 3 successfully disconnected.
+2024-11-28 17:52:03,954 - tracker - INFO - [INFO] Client ('172.16.63.231', 61484) disconnected gracefully
+2024-11-28 17:52:05,456 - tracker - INFO - [DISCONNECT] Peer 4 requested to disconnect.
+2024-11-28 17:52:05,461 - tracker - INFO - [INFO] Peer 4 successfully disconnected.
+2024-11-28 17:52:05,474 - tracker - INFO - [INFO] Client ('172.16.63.231', 61485) disconnected gracefully
+2024-11-28 17:52:06,974 - tracker - INFO - [DISCONNECT] Peer 5 requested to disconnect.
+2024-11-28 17:52:06,977 - tracker - INFO - [INFO] Peer 5 successfully disconnected.
+2024-11-28 17:52:06,987 - tracker - INFO - [INFO] Client ('172.16.63.231', 61488) disconnected gracefully
