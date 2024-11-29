@@ -35,9 +35,35 @@ def setup_logger():
     return logger
 
 # Opening JSON file and load on tracker_data
-file = open('tracker1/tracker.json')
-tracker_data = json.load(file)
+# Create tracker directory if it doesn't exist
+os.makedirs("tracker1", exist_ok=True)
 
+# Initialize or load tracker data
+tracker_json_path = 'tracker1/tracker.json'
+tracker_data = []
+
+# Create or load tracker.json
+if not os.path.exists(tracker_json_path):
+    # Create new file with empty list
+    with open(tracker_json_path, 'w') as file:
+        json.dump([], file)
+else:
+    # Load existing file
+    with open(tracker_json_path, 'r') as file:
+        try:
+            content = file.read()
+            if content.strip():  # Check if file is not empty
+                tracker_data = json.loads(content)
+            else:
+                # If file is empty, initialize with empty list
+                tracker_data = []
+                with open(tracker_json_path, 'w') as write_file:
+                    json.dump([], write_file)
+        except json.JSONDecodeError:
+            # If file contains invalid JSON, initialize with empty list
+            tracker_data = []
+            with open(tracker_json_path, 'w') as write_file:
+                json.dump([], write_file)
 # Global dictionary to manage file locks
 file_locks = {}
 
