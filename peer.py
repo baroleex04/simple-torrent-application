@@ -38,11 +38,11 @@ def setup_logger(peer_id):
     
     return logger
 
-with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-    s.connect(("8.8.8.8", 80))
-    tracker_host = s.getsockname()[0]
+# with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+    # s.connect(("8.8.8.8", 80))
+    # tracker_host = s.getsockname()[0]
 
-tracker_host = "100.111.19.74"
+tracker_host = "192.168.3.13"
 tracker_port = 4000
 download_tracker = set()
 
@@ -1574,7 +1574,6 @@ if __name__ == "__main__":
                                 print(f"Tracker response: {response}")
                         except Exception as e:
                             logger.error(f"Error notifying tracker: {e}")
-                            print(f"Error notifying tracker: {e}")
                     else:
                         logger.error(f"Error: File {file_path} does not exist.")
                         print(f"Error: File {file_path} does not exist.")
@@ -1644,28 +1643,67 @@ if __name__ == "__main__":
                     # Notify the tracker with the updated `info_hash`
                     new_info_hash = torrent_data["info"]
                     
-                    try:
-                        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                            s.connect((tracker_host, tracker_port))
-                            logger.info(f"Notifying tracker about updated peer info for peer {peer_id}...")
+                    # try:
+                    #     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    #         s.connect((tracker_host, tracker_port))
+                    #         logger.info(f"Notifying tracker about updated peer info for peer {peer_id}...")
                             
-                            # Serialize the `info_hash` into a JSON string
-                            new_info_hash_str = json.dumps(new_info_hash)
-                            info_hash_length = len(new_info_hash_str)
+                    #         # Serialize the `info_hash` into a JSON string
+                    #         new_info_hash_str = json.dumps(new_info_hash)
+                    #         info_hash_length = len(new_info_hash_str)
                             
-                            # Send the header with the length of the `info_hash`
-                            header = f"UPDATE_PEER|{peer_id}|{info_hash_length}|".encode('utf-8')
-                            s.sendall(header)
+                    #         # Send the header with the length of the `info_hash`
+                    #         header = f"UPDATE_PEER|{peer_id}|{info_hash_length}|".encode('utf-8')
+                    #         s.sendall(header)
                             
-                            # Send the `info_hash` data in chunks
-                            for i in range(0, info_hash_length, chunk_size):
-                                s.sendall(new_info_hash_str[i:i + chunk_size].encode('utf-8'))
+                    #         # Send the `info_hash` data in chunks
+                    #         for i in range(0, info_hash_length, chunk_size):
+                    #             s.sendall(new_info_hash_str[i:i + chunk_size].encode('utf-8'))
                             
-                            # Wait for acknowledgment from the tracker
-                            response = s.recv(1024).decode('utf-8')
-                            logger.info(f"Tracker response: {response}")
-                    except Exception as e:
-                        logger.error(f"Error notifying tracker: {e}")
+                    #         # Wait for acknowledgment from the tracker
+                    #         response = s.recv(1024).decode('utf-8')
+                    #         logger.info(f"Tracker response: {response}")
+                    # except Exception as e:
+                    #     logger.error(f"Error notifying tracker: {e}")
+
+                    retries=5
+                    timeout=10
+                    
+                    for attempt in range(retries):
+                        try:
+                            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                                s.settimeout(timeout)  # Set connection timeout
+                                logger.info(f"Attempt {attempt + 1}/{retries}: Connecting to tracker...")
+                                s.connect((tracker_host, tracker_port))
+                                logger.info(f"Connected to tracker. Notifying about updated peer info for peer {peer_id}...")
+
+                                # Serialize the info_hash into a JSON string
+                                new_info_hash_str = json.dumps(new_info_hash)
+                                info_hash_length = len(new_info_hash_str)
+
+                                # Send the header with the length of the info_hash
+                                header = f"UPDATE_PEER|{peer_id}|{info_hash_length}|".encode('utf-8')
+                                s.sendall(header)
+
+                                # Send the info_hash data in chunks
+                                for i in range(0, info_hash_length, chunk_size):
+                                    s.sendall(new_info_hash_str[i:i + chunk_size].encode('utf-8'))
+
+                                # Wait for acknowledgment from the tracker
+                                response = s.recv(1024).decode('utf-8')
+                                logger.info(f"Tracker response: {response}")
+                                break  # Break the loop on success
+
+                        except socket.timeout:
+                            logger.warning(f"Attempt {attempt + 1}/{retries}: Connection timed out. Retrying...")
+                        except Exception as e:
+                            logger.error(f"Attempt {attempt + 1}/{retries}: Error notifying tracker: {e}")
+                        finally:
+                            if attempt < retries - 1:
+                                time.sleep(2)  # Wait for 2 seconds before retrying
+                            else:
+                                logger.error("All retry attempts failed. Unable to notify tracker.")
+                    
                 else:
                     logger.error("No piece info available for download.")
             elif command == "EXIT":
