@@ -38,11 +38,11 @@ def setup_logger(peer_id):
     
     return logger
 
-with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-    s.connect(("8.8.8.8", 80))
-    tracker_host = s.getsockname()[0]
+# with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+    # s.connect(("8.8.8.8", 80))
+    # tracker_host = s.getsockname()[0]
 
-tracker_host = "100.111.19.74"
+tracker_host = "192.168.3.13"
 tracker_port = 4000
 download_tracker = set()
 
@@ -199,255 +199,6 @@ def update_torrent_with_chunks(peer_id, file_name=None):
             # print(f"Torrent.json updated successfully for peer {peer_id}.")
     except Exception as e:
         logger.error(f"Error updating torrent.json: {e}")
-
-# def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
-#     """
-#     Download multiple file pieces from peers concurrently, incorporating round-robin scheduling and retry handling.
-
-#     Args:
-#         peer_id (str): ID of the current peer.
-#         file_name (str): Name of the file to download.
-#         pieces_to_peers (dict): Mapping of piece hashes to lists of peers.
-#         chunk_size (int): Size of each chunk in bytes.
-#     """
-#     chunk_folder = f"peer{peer_id}/chunks"
-#     os.makedirs(chunk_folder, exist_ok=True)
-
-#     # Shared resources for thread safety
-#     download_tracker = set()  # Track completed downloads to avoid duplicates
-#     piece_status = {}  # Track download status of each piece
-#     failed_pieces = {}  # Track pieces that failed after all retries
-#     piece_status_lock = threading.Lock()  # Lock for thread-safe updates
-
-#     def is_piece_downloaded(piece_hash):
-#         piece_path = os.path.join(chunk_folder, f"{piece_hash}.chunk")
-#         return os.path.exists(piece_path)
-
-#     def download_piece(piece_hash, peer_list, piece_index):
-#         """
-#         Attempt to download a specific piece from multiple peers.
-#         """
-#         nonlocal download_tracker, failed_pieces
-#         random.shuffle(peer_list)  # Randomize peer order to ensure fairness
-
-#         output_path = os.path.join(chunk_folder, f"{piece_hash}.chunk")
-
-#         for peer_info in peer_list:
-#             peer_host = peer_info["ip"]
-#             peer_port = int(peer_info["port"])
-
-#             # Skip if the piece is already downloaded
-#             if piece_hash in download_tracker:
-#                 return
-
-#             try:
-#                 download_piece_from_peer(
-#                     peer_host=peer_host,
-#                     peer_port=peer_port,
-#                     piece_hash=piece_hash,
-#                     output_path=output_path,
-#                     peer_id=peer_id,
-#                     file_name=file_name,
-#                     chunk_index=piece_index
-#                 )
-#                 with piece_status_lock:
-#                     download_tracker.add(piece_hash)
-#                     piece_status[piece_hash] = True
-#                 return
-#             except Exception as e:
-#                 logger.error(f"Failed to download piece {piece_hash} from {peer_host}:{peer_port} - {e}")
-
-#         with piece_status_lock:
-#             piece_status[piece_hash] = False  # Mark as failed
-#             failed_pieces[piece_hash] = peer_list
-
-#     def round_robin_download():
-#         """
-#         Perform round-robin scheduling for downloading pieces from peers.
-#         """
-#         piece_queue = [
-#             (piece_hash, peer_list)
-#             for piece_hash, peer_list in pieces_to_peers.items()
-#             if not is_piece_downloaded(piece_hash)
-#         ]
-
-#         threads = []
-#         while piece_queue:
-#             piece_hash, peer_list = piece_queue.pop(0)
-#             piece_index = peer_list[0]["index"]  # Assume the index is consistent across peers
-#             thread = threading.Thread(target=download_piece, args=(piece_hash, peer_list, piece_index), daemon=True)
-#             threads.append(thread)
-#             thread.start()
-
-#             # Reinsert the piece to the end of the queue if not downloaded
-#             with piece_status_lock:
-#                 if piece_hash not in download_tracker:
-#                     piece_queue.append((piece_hash, peer_list))
-
-#         for thread in threads:
-#             thread.join()
-
-#     # Perform initial round-robin download
-#     round_robin_download()
-
-#     # Retry failed pieces
-#     retry_count = 0
-#     while failed_pieces and retry_count < MAX_RETRIES:
-#         retry_count += 1
-#         logger.info(f"Retrying failed pieces (attempt {retry_count})")
-#         current_failed = failed_pieces.copy()
-#         failed_pieces.clear()
-
-#         threads = []
-#         for piece_hash, peer_list in current_failed.items():
-#             piece_index = peer_list[0]["index"]
-#             thread = threading.Thread(target=download_piece, args=(piece_hash, peer_list, piece_index), daemon=True)
-#             threads.append(thread)
-#             thread.start()
-
-#         for thread in threads:
-#             thread.join()
-
-#         time.sleep(RETRY_DELAY)
-
-#     # Combine successfully downloaded pieces
-#     logger.info("Combining downloaded pieces...")
-#     piece_order = sorted(
-#         [p for p in pieces_to_peers.keys() if piece_status.get(p, False)],
-#         key=lambda piece_hash: pieces_to_peers[piece_hash][0]["index"]
-#     )
-#     combine_and_validate_pieces(
-#         received_folder=chunk_folder,
-#         output_file=f"peer{peer_id}/received_files/{file_name}",
-#         piece_order=piece_order
-#     )
-
-#     if failed_pieces:
-#         logger.error(f"Failed to download {len(failed_pieces)} pieces after all retries.")
-#         for piece_hash in failed_pieces:
-#             logger.error(f"Failed piece: {piece_hash}")
-
-# def download_file_concurrently(peer_id, file_name, pieces_to_peers, chunk_size):
-#     """
-#     Download multiple file pieces from peers concurrently, incorporating round-robin scheduling and retry handling.
-
-#     Args:
-#         peer_id (str): ID of the current peer.
-#         file_name (str): Name of the file to download.
-#         pieces_to_peers (dict): Mapping of piece hashes to lists of peers.
-#         chunk_size (int): Size of each chunk in bytes.
-#     """
-#     chunk_folder = f"peer{peer_id}/chunks"
-#     os.makedirs(chunk_folder, exist_ok=True)
-
-#     # Shared resources for thread safety
-#     download_tracker = set()  # Track completed downloads to avoid duplicates
-#     failed_pieces = {}  # Track pieces that failed after retries
-#     piece_status_lock = threading.Lock()  # Lock for thread-safe updates
-
-#     def is_piece_downloaded(piece_hash):
-#         """Check if the piece is already downloaded."""
-#         piece_path = os.path.join(chunk_folder, f"{piece_hash}.chunk")
-#         return os.path.exists(piece_path)
-
-#     def download_piece(piece_hash, peer_list):
-#         """Attempt to download a specific piece from multiple peers."""
-#         nonlocal download_tracker, failed_pieces
-#         random.shuffle(peer_list)  # Randomize peer order to ensure fairness
-
-#         output_path = os.path.join(chunk_folder, f"{piece_hash}.chunk")
-
-#         with piece_status_lock:
-#             if piece_hash in download_tracker:
-#                 return  # Skip if already downloaded by another thread
-
-#         for peer_info in peer_list:
-#             peer_host = peer_info["ip"]
-#             peer_port = int(peer_info["port"])
-
-#             try:
-#                 download_piece_from_peer(
-#                     peer_host=peer_host,
-#                     peer_port=peer_port,
-#                     piece_hash=piece_hash,
-#                     output_path=output_path,
-#                     peer_id=peer_id,
-#                     file_name=file_name
-#                 )
-#                 with piece_status_lock:
-#                     download_tracker.add(piece_hash)
-#                 return
-#             except Exception as e:
-#                 logger.error(f"Failed to download piece {piece_hash} from {peer_host}:{peer_port} - {e}")
-
-#         with piece_status_lock:
-#             failed_pieces[piece_hash] = peer_list  # Mark as failed
-
-#     def round_robin_download():
-#         """Perform round-robin scheduling for downloading pieces from peers."""
-#         piece_queue = [
-#             (piece_hash, peer_list)
-#             for piece_hash, peer_list in pieces_to_peers.items()
-#             if not is_piece_downloaded(piece_hash)
-#         ]
-
-#         threads = []
-#         while piece_queue:
-#             with piece_status_lock:
-#                 # Pop a piece only if it's not already being downloaded
-#                 piece_hash, peer_list = piece_queue.pop(0)
-#                 if piece_hash in download_tracker:
-#                     continue
-
-#             thread = threading.Thread(target=download_piece, args=(piece_hash, peer_list), daemon=True)
-#             threads.append(thread)
-#             thread.start()
-
-#         for thread in threads:
-#             thread.join()
-
-#     # Perform initial round-robin download
-#     round_robin_download()
-
-#     # Retry failed pieces
-#     retry_count = 0
-#     while failed_pieces and retry_count < MAX_RETRIES:
-#         retry_count += 1
-#         logger.info(f"Retrying failed pieces (attempt {retry_count})")
-#         current_failed = failed_pieces.copy()
-#         failed_pieces.clear()
-
-#         threads = []
-#         for piece_hash, peer_list in current_failed.items():
-#             with piece_status_lock:
-#                 if piece_hash in download_tracker:
-#                     continue  # Skip if already downloaded
-
-#             thread = threading.Thread(target=download_piece, args=(piece_hash, peer_list), daemon=True)
-#             threads.append(thread)
-#             thread.start()
-
-#         for thread in threads:
-#             thread.join()
-
-#         time.sleep(RETRY_DELAY)
-
-#     # Combine successfully downloaded pieces
-#     logger.info("Combining downloaded pieces...")
-#     piece_order = sorted(
-#         [p for p in pieces_to_peers.keys() if p in download_tracker],
-#         key=lambda piece_hash: pieces_to_peers[piece_hash][0]["index"]
-#     )
-#     combine_and_validate_pieces(
-#         received_folder=chunk_folder,
-#         output_file=f"peer{peer_id}/received_files/{file_name}",
-#         piece_order=piece_order
-#     )
-
-#     if failed_pieces:
-#         logger.error(f"Failed to download {len(failed_pieces)} pieces after all retries.")
-#         for piece_hash in failed_pieces:
-#             logger.error(f"Failed piece: {piece_hash}")
 
 import queue
 from concurrent.futures import ThreadPoolExecutor
@@ -1574,7 +1325,6 @@ if __name__ == "__main__":
                                 print(f"Tracker response: {response}")
                         except Exception as e:
                             logger.error(f"Error notifying tracker: {e}")
-                            print(f"Error notifying tracker: {e}")
                     else:
                         logger.error(f"Error: File {file_path} does not exist.")
                         print(f"Error: File {file_path} does not exist.")
@@ -1644,28 +1394,67 @@ if __name__ == "__main__":
                     # Notify the tracker with the updated `info_hash`
                     new_info_hash = torrent_data["info"]
                     
-                    try:
-                        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                            s.connect((tracker_host, tracker_port))
-                            logger.info(f"Notifying tracker about updated peer info for peer {peer_id}...")
+                    # try:
+                    #     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    #         s.connect((tracker_host, tracker_port))
+                    #         logger.info(f"Notifying tracker about updated peer info for peer {peer_id}...")
                             
-                            # Serialize the `info_hash` into a JSON string
-                            new_info_hash_str = json.dumps(new_info_hash)
-                            info_hash_length = len(new_info_hash_str)
+                    #         # Serialize the `info_hash` into a JSON string
+                    #         new_info_hash_str = json.dumps(new_info_hash)
+                    #         info_hash_length = len(new_info_hash_str)
                             
-                            # Send the header with the length of the `info_hash`
-                            header = f"UPDATE_PEER|{peer_id}|{info_hash_length}|".encode('utf-8')
-                            s.sendall(header)
+                    #         # Send the header with the length of the `info_hash`
+                    #         header = f"UPDATE_PEER|{peer_id}|{info_hash_length}|".encode('utf-8')
+                    #         s.sendall(header)
                             
-                            # Send the `info_hash` data in chunks
-                            for i in range(0, info_hash_length, chunk_size):
-                                s.sendall(new_info_hash_str[i:i + chunk_size].encode('utf-8'))
+                    #         # Send the `info_hash` data in chunks
+                    #         for i in range(0, info_hash_length, chunk_size):
+                    #             s.sendall(new_info_hash_str[i:i + chunk_size].encode('utf-8'))
                             
-                            # Wait for acknowledgment from the tracker
-                            response = s.recv(1024).decode('utf-8')
-                            logger.info(f"Tracker response: {response}")
-                    except Exception as e:
-                        logger.error(f"Error notifying tracker: {e}")
+                    #         # Wait for acknowledgment from the tracker
+                    #         response = s.recv(1024).decode('utf-8')
+                    #         logger.info(f"Tracker response: {response}")
+                    # except Exception as e:
+                    #     logger.error(f"Error notifying tracker: {e}")
+
+                    retries=5
+                    timeout=10
+                    
+                    for attempt in range(retries):
+                        try:
+                            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                                s.settimeout(timeout)  # Set connection timeout
+                                logger.info(f"Attempt {attempt + 1}/{retries}: Connecting to tracker...")
+                                s.connect((tracker_host, tracker_port))
+                                logger.info(f"Connected to tracker. Notifying about updated peer info for peer {peer_id}...")
+
+                                # Serialize the info_hash into a JSON string
+                                new_info_hash_str = json.dumps(new_info_hash)
+                                info_hash_length = len(new_info_hash_str)
+
+                                # Send the header with the length of the info_hash
+                                header = f"UPDATE_PEER|{peer_id}|{info_hash_length}|".encode('utf-8')
+                                s.sendall(header)
+
+                                # Send the info_hash data in chunks
+                                for i in range(0, info_hash_length, chunk_size):
+                                    s.sendall(new_info_hash_str[i:i + chunk_size].encode('utf-8'))
+
+                                # Wait for acknowledgment from the tracker
+                                response = s.recv(1024).decode('utf-8')
+                                logger.info(f"Tracker response: {response}")
+                                break  # Break the loop on success
+
+                        except socket.timeout:
+                            logger.warning(f"Attempt {attempt + 1}/{retries}: Connection timed out. Retrying...")
+                        except Exception as e:
+                            logger.error(f"Attempt {attempt + 1}/{retries}: Error notifying tracker: {e}")
+                        finally:
+                            if attempt < retries - 1:
+                                time.sleep(2)  # Wait for 2 seconds before retrying
+                            else:
+                                logger.error("All retry attempts failed. Unable to notify tracker.")
+                    
                 else:
                     logger.error("No piece info available for download.")
             elif command == "EXIT":
